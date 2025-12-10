@@ -14,10 +14,17 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('phone')->unique();
+            $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('type', ['buyer', 'seller']);
+            $table->string('city');
+            $table->string('region');
+            $table->unsignedBigInteger('category_id')->nullable();
+            $table->foreign('category_id')->references('id')->on('categories')->nullOnDelete();
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
 
