@@ -6,12 +6,14 @@ use App\Models\Product\Product;
 use App\Models\Product\Category;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Admin extends Model
+class Admin extends Authenticatable
 {
     use HasFactory, Notifiable, SoftDeletes;
+    protected $guards = 'admin';
 
     protected $fillable = [
         'name',

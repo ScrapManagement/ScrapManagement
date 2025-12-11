@@ -17,7 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+         $middleware->alias([
+            'is.admin' => \App\Http\Middleware\DashBoard\Admin\IsAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
