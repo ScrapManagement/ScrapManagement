@@ -3,7 +3,12 @@
 <a href= "{{ route("admin.create") }}" class="btn btn-success  mb-3">Add Admin</a>
 <div class="card">
     <div class="card-body">
-      <h4 class="card-title">admin table</h4>
+        @if (session('success'))
+            <div id="success-alert" class="alert alert-success" role="alert">
+                {{ session('success') }}
+            </div>
+        @endif
+      <h4 class="card-title">Admin table</h4>
       </p>
       <table class="table table-bordered">
         <thead>

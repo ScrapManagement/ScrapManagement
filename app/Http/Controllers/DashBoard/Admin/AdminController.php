@@ -32,7 +32,7 @@ class AdminController extends Controller
     public function store(AdminRequest $request)
     {
         Admin::create($request->toArray());
-        return to_route("admin.index");
+        return to_route("admin.index")->with("success", "Admin added successfully");
     }
 
     /**
@@ -40,7 +40,8 @@ class AdminController extends Controller
      */
     public function show(string $id)
     {
-        $admin = Admin::findOrfail($id);
+        //$admin = Admin::findOrfail($id);
+        $admin = auth()->guard('admin')->user();
         return view("DashBoard.admin.show", compact("admin"));
     }
 
@@ -64,7 +65,7 @@ class AdminController extends Controller
         $data = $request->except("_token", "_method");
         $admin->update($data);
 
-        return to_route("admin.index");
+        return to_route("admin.index")->with("success", "Data updated successfully");
     }
 
     /**
@@ -73,6 +74,6 @@ class AdminController extends Controller
     public function destroy(string $id)
     {
         Admin::where("id", $id)->delete();
-        return to_route("admin.index");
+       return to_route("admin.index")->with("success", "Admin deleted successfully");
     }
 }
