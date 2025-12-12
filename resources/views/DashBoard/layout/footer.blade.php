@@ -23,6 +23,17 @@
     <script src="{{asset('dash')}}/js/hoverable-collapse.js"></script>
     <script src="{{asset('dash')}}/js/misc.js"></script>
     <script src="{{asset('dash')}}/js/file-upload.js"></script>
+    <script>
+       setTimeout(function () {
+        let alertBox = document.getElementById('success-alert');
+        if (alertBox) {
+            alertBox.style.transition = "0.5s";
+            alertBox.style.opacity = "0";
+            setTimeout(() => alertBox.remove(), 500);
+        }
+       }, 5000);
+    </script>
+
     <!-- endinject -->
     <!-- Custom js for this page -->
     <!-- End custom js for this page -->
