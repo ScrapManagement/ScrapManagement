@@ -25,7 +25,13 @@ class AdminRequest extends FormRequest
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|max:255|unique:admins,email,' . $this->id,
             'phone'    => 'required|string|max:12|unique:admins,phone,' . $this->id,
-            'password' => 'required|string|min:6',
+            'password' => 'required|string|min:6|confirmed',
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'password.confirmed' => 'Password confirmation does not match',
         ];
     }
 }

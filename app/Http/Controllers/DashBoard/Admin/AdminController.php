@@ -6,6 +6,8 @@ use App\Models\Admin\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DashBoard\Admin\AdminRequest;
+use App\Http\Requests\DashBoard\Admin\UpdateAdminRequest;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -57,13 +59,26 @@ class AdminController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateAdminRequest $request, string $id)
     {
         $admin = auth()->guard('admin')->user();
         // $admin = Admin::findOrfail($id);
 
-        $data = $request->except("_token", "_method");
-        $admin->update($data);
+        $admin->update(
+            $request->only(['name', 'email', 'phone'])
+        );
+        if ($request->filled('password')) {
+
+            if (!Hash::check($request->old_password, $admin->password)) {
+                return back()->withErrors([
+                    'old_password' => 'Old password is incorrect'
+                ]);
+            }
+            $admin->update([
+                'password' => $request->password
+            ]);
+        }
+
 
         return to_route("admin.index")->with("success", "Data updated successfully");
     }
@@ -74,6 +89,6 @@ class AdminController extends Controller
     public function destroy(string $id)
     {
         Admin::where("id", $id)->delete();
-       return to_route("admin.index")->with("success", "Admin deleted successfully");
+        return to_route("admin.index")->with("success", "Admin deleted successfully");
     }
 }

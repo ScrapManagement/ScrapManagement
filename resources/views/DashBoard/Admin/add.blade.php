@@ -11,24 +11,30 @@
       <div class="form-group">
         @error('name') <p style="color: red" >{{ $message }}</p> @enderror
         <label for="exampleInputUsername1">Username</label>
-        <input type="text"  name="name" class="form-control" id="exampleInputUsername1" placeholder="Username">
+        <input type="text"  name="name" class="form-control" id="exampleInputUsername1" placeholder="Enter Username">
       </div>
       <div class="form-group">
         @error('email') <p style="color: red" >{{ $message }}</p> @enderror
         <label for="exampleInputEmail1">Email </label>
-        <input type="email" name="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
-      </div>
-      <div class="form-group">
-        @error('password') <p style="color: red" >{{ $message }}</p> @enderror
-        <label for="exampleInputUsername1">Passwprd</label>
-        <input type="password" name="password" class="form-control" id="exampleInputUsername1" placeholder="Passwprd">
+        <input type="email" name="email" class="form-control" id="exampleInputEmail1" placeholder="Enter Email">
       </div>
 
       <div class="form-group">
         @error('phone') <p style="color: red" >{{ $message }}</p> @enderror
         <label for="exampleInputUsername1">Phone</label>
-        <input type="number" name="phone" class="form-control" id="exampleInputUsername1" placeholder="Enter Your Phone">
+        <input type="number" name="phone" class="form-control" id="exampleInputUsername1" placeholder="Enter  Phone">
       </div>
+
+    <div class="form-group">
+        @error('password') <p style="color: red" >{{ $message }}</p> @enderror
+        <label for="exampleInputUsername1">Password</label>
+        <input type="password" name="password" class="form-control" id="exampleInputUsername1" placeholder="Enter  Password">
+      </div>
+
+       <div class="form-group">
+            <label>Confirm  Password</label>
+            <input type="password" name="password_confirmation" class="form-control" placeholder="Confirm  Password">
+        </div>
 
 
 

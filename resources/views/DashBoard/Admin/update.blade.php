@@ -26,6 +26,23 @@
         <input type="number"  value="{{ $admin->phone }}" name="phone" class="form-control" id="exampleInputUsername1" placeholder="Phone">
       </div>
 
+      <div class="form-group">
+         @error('old_password') <p style="color:red">{{ $message }}</p> @enderror
+            <label>Old Password</label>
+            <input type="password" name="old_password" class="form-control">
+        </div>
+
+        <div class="form-group">
+            @error('password') <p style="color:red">{{ $message }}</p> @enderror
+            <label>New Password</label>
+            <input type="password" name="password" class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" name="password_confirmation" class="form-control">
+        </div>
+
 
 
 
