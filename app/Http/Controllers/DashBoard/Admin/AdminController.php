@@ -15,7 +15,7 @@ class AdminController extends Controller
     public function index()
     {
         $Admin = Admin::get();
-        return view("DashBoard.admin.view", compact("Admin"));
+        return view("DashBoard.Admin.view", compact("Admin"));
     }
 
     /**
@@ -23,7 +23,7 @@ class AdminController extends Controller
      */
     public function create()
     {
-        return view("DashBoard.admin.add");
+        return view("DashBoard.Admin.add");
     }
 
     /**
@@ -42,7 +42,7 @@ class AdminController extends Controller
     {
         //$admin = Admin::findOrfail($id);
         $admin = auth()->guard('admin')->user();
-        return view("DashBoard.admin.show", compact("admin"));
+        return view("DashBoard.Admin.show", compact("admin"));
     }
 
     /**
@@ -51,7 +51,7 @@ class AdminController extends Controller
     public function edit(string $id)
     {
         $admin = auth()->guard('admin')->user();
-        return view('DashBoard.admin.update', compact('admin'));
+        return view('DashBoard.Admin.update', compact('admin'));
     }
 
     /**
