@@ -25,6 +25,7 @@
                         <th> # </th>
                         <th> Name </th>
                         <th> Description </th>
+                        <th> Created By </th>
                         <th> Actions </th> 
                     </tr>
                 </thead>
@@ -36,6 +37,8 @@
                             <td>{{ $category->name }}</td>
                             
                             <td>{{ Str::limit($category->description, 50) }}</td>
+
+                            <td>{{ $category->admin->name ?? 'Unknown' }}</td>
 
                             <td class="d-flex gap-2">
                                 <a href="{{ route('categories.show', $category->id) }}" class="btn btn-primary btn-sm">

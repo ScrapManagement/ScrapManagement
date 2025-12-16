@@ -24,7 +24,7 @@
 
             <tr>
                 <th>Created By</th>
-                <td>{{ $category->created_by }}</td>
+                <td>{{ $category->admin->name }}</td>
             </tr>
 
             <tr>

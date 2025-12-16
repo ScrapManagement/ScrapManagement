@@ -5,6 +5,7 @@ namespace App\Http\Controllers\DashBoard\Category;
 use App\Http\Controllers\Controller;
 use App\Models\Product\Category;
 use Illuminate\Http\Request;
+use App\Http\Requests\DashBoard\Category\CategoryRequest;
 
 class CategoryController extends Controller
 {
@@ -13,8 +14,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        // return view for listing categories
-        $categories = Category::all(); // This would typically fetch categories from the database
+        $categories = Category::all(); 
         return view('DashBoard.categories.index', compact('categories'));
     }
 
@@ -23,26 +23,18 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        // return view for creating a new category
         return view('DashBoard.categories.add');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        // validate the request
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-
-        // Logic to store the category would go here
+    public function store(CategoryRequest  $request)
+    {   
         \App\Models\Product\Category::create([
             'name' => $request->name,
-            'description' => $request->input('description'),
-            'created_by' => auth('admin')->id(), // assuming admin is authenticated
+            'description' => $request->description,
+            'created_by' => auth('admin')->id(),
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Category created successfully.');
@@ -53,7 +45,6 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        // Logic to get the category by id would go here
         $category = Category::findOrFail($id);
         return view('DashBoard.categories.show', compact('category'));
     }
@@ -63,7 +54,6 @@ class CategoryController extends Controller
      */
     public function edit(string $id)
     {
-        // Logic to get the category by id would go here
         $category = Category::findOrFail($id);
         return view('DashBoard.categories.update', compact('category'));
     }
@@ -71,19 +61,13 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CategoryRequest $request, string $id)
     {
-        // validate the request
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
-        // Logic to update the category would go here
         $category = Category::findOrFail($id);
         
         $category->update([
             'name' => $request->name,
-            'description' => $request->input('description'),
+            'description' => $request->description,
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
@@ -94,7 +78,6 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        // Logic to delete the category would go here
         $category = Category::findOrFail($id);
         $category->delete();    
 
