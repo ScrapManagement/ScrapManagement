@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashBoard\Admin\AdminController;
 use App\Http\Controllers\DashBoard\Admin\LoginController;
 
+use App\Http\Controllers\DashBoard\Category\CategoryController; 
+
 
 
 
@@ -17,4 +19,6 @@ Route::middleware(['auth:admin', 'is.admin'])->group(function () {
     });
 
     Route::resource("admin", AdminController::class);
+
+    Route::resource("categories", CategoryController::class); 
 });
