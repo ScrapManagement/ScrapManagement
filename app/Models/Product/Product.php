@@ -27,9 +27,9 @@ class Product extends Model
         'reviewed_by'
     ];
 
-    public function user()
+     public function seller()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function category()

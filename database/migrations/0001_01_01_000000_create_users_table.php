@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('type', ['buyer', 'seller']);
+           /*  $table->enum('type', ['buyer', 'seller']); */
             $table->string('city');
             $table->string('region');
             $table->unsignedBigInteger('category_id')->nullable();
