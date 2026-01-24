@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\User\Role;
+use App\Models\Product\Order;
 use App\Models\Product\Product;
 use App\Models\Product\Category;
 use Illuminate\Notifications\Notifiable;
@@ -25,7 +27,6 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'type',
         'city',
         'region',
         'category_id'
@@ -62,5 +63,24 @@ class User extends Authenticatable
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_users');
+    }
+
+    public function isSeller()
+    {
+        return $this->roles()->where('name', 'seller')->exists();
+    }
+
+    public function isBuyer()
+    {
+        return $this->roles()->where('name', 'buyer')->exists();
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'buyer_id');
     }
 }
