@@ -21,12 +21,22 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="exampleInputDescription">Description</label>
-                    <textarea name="description" class="form-control" id="exampleInputDescription" rows="4" placeholder="Description">{{ old('description', $category->description) }}</textarea>
-                    @error('description') 
-                        <p style="color: red">{{ $message }}</p> 
+                    <label for="parent_id">Parent Category</label>
+                    <select name="parent_id" class="form-control" id="parent_id">
+                        <option value="" {{ $category->parent_id == null ? 'selected' : '' }}>Primary Category (No Parent)</option>
+                        
+                        @foreach($allCategories as $cat)
+                            <option value="{{ $cat->id }}" 
+                                {{ old('parent_id', $category->parent_id) == $cat->id ? 'selected' : '' }}>
+                                {{ $cat->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('parent_id')
+                        <p style="color:red">{{ $message }}</p>
                     @enderror
                 </div>
+
 
                 <button type="submit" class="btn btn-gradient-primary me-2">Update</button>
                 <a href="{{ route('categories.index') }}" class="btn btn-light">Cancel</a>

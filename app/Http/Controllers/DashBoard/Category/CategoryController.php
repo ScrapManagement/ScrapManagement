@@ -23,7 +23,8 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('DashBoard.categories.add');
+        $categories = Category::whereNull('parent_id')->with('children')->get();
+        return view('DashBoard.categories.add', compact('categories'));
     }
 
     /**
@@ -33,7 +34,7 @@ class CategoryController extends Controller
     {   
         \App\Models\Product\Category::create([
             'name' => $request->name,
-            'description' => $request->description,
+            'parent_id' => $request->parent_id,
             'created_by' => auth('admin')->id(),
         ]);
 
@@ -55,7 +56,8 @@ class CategoryController extends Controller
     public function edit(string $id)
     {
         $category = Category::findOrFail($id);
-        return view('DashBoard.categories.update', compact('category'));
+        $allCategories = Category::whereNull('parent_id')->with('children')->get();
+        return view('DashBoard.categories.update', compact('category', 'allCategories'));
     }
 
     /**
@@ -67,7 +69,7 @@ class CategoryController extends Controller
         
         $category->update([
             'name' => $request->name,
-            'description' => $request->description,
+            'parent_id' => $request->parent_id,
         ]);
 
         return redirect()->route('categories.index')->with('success', 'Category updated successfully.');

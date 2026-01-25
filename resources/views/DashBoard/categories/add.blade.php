@@ -19,9 +19,24 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="exampleInputDescription">Description</label>
-                    <textarea name="description" class="form-control" id="exampleInputDescription" rows="4" placeholder="Description">{{ old('description') }}</textarea>
-                    @error('description')
+                    <label for="parent_id">Parent Category</label>
+                    <select name="parent_id" class="form-control" id="parent_id">
+                        <option value="" selected>Primary Category (No Parent)</option>
+                        
+                        @foreach($categories as $mainCategory)
+                            <option value="{{ $mainCategory->id }}" style="font-weight:bold;" {{ old('parent_id') == $mainCategory->id ? 'selected' : '' }}>
+                                {{ $mainCategory->name }}
+                            </option>
+
+                            @foreach($mainCategory->children as $subCategory)
+                                <option value="{{ $subCategory->id }}" {{ old('parent_id') == $subCategory->id ? 'selected' : '' }}>
+                                    &nbsp;&nbsp;&nbsp; -- {{ $subCategory->name }}
+                                </option>
+                            @endforeach  
+                        
+                        @endforeach     
+                    </select>
+                    @error('parent_id')
                         <p style="color:red">{{ $message }}</p>
                     @enderror
                 </div>

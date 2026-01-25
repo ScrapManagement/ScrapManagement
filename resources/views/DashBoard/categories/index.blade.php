@@ -24,7 +24,7 @@
                     <tr>
                         <th> # </th>
                         <th> Name </th>
-                        <th> Description </th>
+                        <th> Parent Category </th>
                         <th> Created By </th>
                         <th> Actions </th> 
                     </tr>
@@ -36,7 +36,13 @@
                             
                             <td>{{ $category->name }}</td>
                             
-                            <td>{{ Str::limit($category->description, 50) }}</td>
+                            <td>
+                                @if($category->parent)
+                                    <span class="badge badge-info">{{ $category->parent->name }}</span>
+                                @else
+                                    <span class="badge badge-secondary">Main Category</span>
+                                @endif
+                            </td>
 
                             <td>{{ $category->admin->name ?? 'Unknown' }}</td>
 
@@ -59,7 +65,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center text-muted">
+                            <td colspan="5" class="text-center text-muted"> 
                                 No Categories Found
                             </td>
                         </tr>
