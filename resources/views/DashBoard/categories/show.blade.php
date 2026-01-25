@@ -18,13 +18,19 @@
             </tr>
 
             <tr>
-                <th>Description</th>
-                <td>{{ $category->description ?? 'No Description' }}</td>
+                <th>Parent Category</th>
+                <td>
+                    @if($category->parent)
+                        <span class="badge badge-info">{{ $category->parent->name }}</span>
+                    @else
+                        <span class="badge badge-secondary">Main Category</span>
+                    @endif
+                </td>
             </tr>
 
             <tr>
                 <th>Created By</th>
-                <td>{{ $category->admin->name }}</td>
+                <td>{{ $category->admin->name ?? 'Unknown' }}</td>
             </tr>
 
             <tr>
@@ -35,7 +41,6 @@
 
         <div class="d-flex gap-2 mt-3">
             <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-info">Update</a>
-
             <a href="{{ route('categories.index') }}" class="btn btn-secondary">Back</a>
         </div>
     </div>
