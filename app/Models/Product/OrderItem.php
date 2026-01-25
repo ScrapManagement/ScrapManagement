@@ -2,7 +2,8 @@
 
 namespace App\Models\Product;
 
-use App\Models\User;
+
+use App\Models\User\User;
 use App\Models\Product\Order;
 use App\Models\Product\Product;
 use Illuminate\Database\Eloquent\Model;

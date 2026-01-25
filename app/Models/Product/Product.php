@@ -2,7 +2,7 @@
 
 namespace App\Models\Product;
 
-use App\Models\User;
+use App\Models\User\User;
 use App\Models\Admin\Admin;
 use App\Models\Product\Image;
 use App\Models\Product\Category;

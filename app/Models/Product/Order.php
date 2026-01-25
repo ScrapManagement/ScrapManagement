@@ -2,7 +2,7 @@
 
 namespace App\Models\Product;
 
-use App\Models\User;
+use App\Models\User\User;
 use App\Models\Product\OrderItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
