@@ -24,16 +24,9 @@
                         <option value="" selected>Primary Category (No Parent)</option>
                         
                         @foreach($categories as $mainCategory)
-                            <option value="{{ $mainCategory->id }}" style="font-weight:bold;" {{ old('parent_id') == $mainCategory->id ? 'selected' : '' }}>
+                            <option value="{{ $mainCategory->id }}"{{ old('parent_id') == $mainCategory->id ? 'selected' : '' }}>
                                 {{ $mainCategory->name }}
                             </option>
-
-                            @foreach($mainCategory->children as $subCategory)
-                                <option value="{{ $subCategory->id }}" {{ old('parent_id') == $subCategory->id ? 'selected' : '' }}>
-                                    &nbsp;&nbsp;&nbsp; -- {{ $subCategory->name }}
-                                </option>
-                            @endforeach  
-                        
                         @endforeach     
                     </select>
                     @error('parent_id')

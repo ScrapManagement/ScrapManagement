@@ -23,7 +23,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        $categories = Category::whereNull('parent_id')->with('children')->get();
+        $categories = Category::whereNull('parent_id')->get();
         return view('DashBoard.categories.add', compact('categories'));
     }
 
@@ -56,7 +56,7 @@ class CategoryController extends Controller
     public function edit(string $id)
     {
         $category = Category::findOrFail($id);
-        $allCategories = Category::whereNull('parent_id')->with('children')->get();
+        $allCategories = Category::whereNull('parent_id')->where('id', '!=', $id)->get();
         return view('DashBoard.categories.update', compact('category', 'allCategories'));
     }
 
