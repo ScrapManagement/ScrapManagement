@@ -36,6 +36,12 @@
                 <i class="mdi mdi-format-list-bulleted menu-icon"></i>
               </a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('user.index') }}">
+                <span class="menu-title">Users</span>
+                <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+              </a>
+            </li>
           </ul>
         </nav>
         <!-- partial -->

@@ -4,7 +4,6 @@ namespace App\Models\Product;
 
 use App\Models\Admin\Admin;
 use App\Models\Product\Product;
-use App\Models\Product\Category;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
