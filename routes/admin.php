@@ -22,5 +22,7 @@ Route::middleware(['auth:admin', 'is.admin'])->group(function () {
     Route::resource("user", UserController::class);
     Route::resource("categories", CategoryController::class);
     Route::resource("product", ProductController::class);
+    Route::patch('/product/{id}/status', [ProductController::class, 'changeStatus'])
+    ->name('product.changeStatus');
 
 });

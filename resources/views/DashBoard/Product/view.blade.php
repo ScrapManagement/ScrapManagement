@@ -19,6 +19,7 @@
                     <th>Quantity</th>
                     <th>Unit</th>
                     <th>Category</th>
+                    <th>Status</th>
                     <th>Images</th>
                     <th>Actions</th>
                 </tr>
@@ -39,6 +40,12 @@
 
                     <td>
                         {{ $product->category?->name ?? '—' }}
+                    </td>
+
+                    <td>
+                        <span class="badge bg-{{ $product->status == 'approved' ? 'success' : ($product->status == 'rejected' ? 'danger' : 'warning') }}">
+                             {{ ucfirst($product->status) }}
+                        </span>
                     </td>
 
                     <td>
