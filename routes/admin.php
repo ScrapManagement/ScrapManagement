@@ -22,5 +22,6 @@ Route::middleware(['auth:admin', 'is.admin'])->group(function () {
     Route::resource("user", UserController::class);
     Route::resource("categories", CategoryController::class);
     Route::resource("product", ProductController::class);
+    Route::resource("role", App\Http\Controllers\DashBoard\Role\RoleController::class);
 
 });
