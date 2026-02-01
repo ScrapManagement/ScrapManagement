@@ -3,7 +3,13 @@
 @section('content')
     <div class="card w-75 mx-auto">
         <div class="card-body">
-            <h4 class="card-title mb-4">Product Details</h4>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="card-title mb-0">Product Details</h4>
+                <span class="badge bg-{{ $product->status == 'approved' ? 'success' : ($product->status == 'rejected' ? 'danger' : 'warning') }}">
+                    {{ ucfirst($product->status) }}
+                </span>
+            </div>
 
             <table class="table table-bordered mb-4">
                 <tr>
@@ -18,7 +24,7 @@
 
                 <tr>
                     <th>Price</th>
-                    <td>{{ $product->price }}</td>
+                    <td>{{ $product->price }} EGP</td>
                 </tr>
 
                 <tr>
@@ -37,19 +43,49 @@
                 </tr>
 
                 <tr>
-                    <th>Status</th>
-                    <td>
-                        <span class="badge bg-warning text-dark">
-                            {{ ucfirst($product->status) }}
-                        </span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <th>Created By</th>
+                    <th>Seller</th>
                     <td>{{ $product->seller->name ?? 'N/A' }}</td>
                 </tr>
+                
+                @if($product->reviewed_by)
+                <tr>
+                    <th>Reviewed By</th>
+                    <td class="text-primary fw-bold">{{ $product->reviewer->name ?? 'Admin #' . $product->reviewed_by }}</td>
+                </tr>
+                @endif
             </table>
+            
+            <div class="card mb-4 border border-secondary">
+                <div class="card-body bg-light">
+                    <h5 class="card-title text-dark">Admin Decision</h5>
+                    <div class="d-flex gap-3">
+                        
+                        @if($product->status !== 'approved')
+                            <form action="{{ route('product.changeStatus', $product->id) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="status" value="approved">
+                                <button type="submit" class="btn btn-success text-white" onclick="return confirm('Approve this product?')">
+                                    Approve Product
+                                </button>
+                            </form>
+                        @endif
+
+                        @if($product->status !== 'rejected')
+                            <form action="{{ route('product.changeStatus', $product->id) }}" method="POST">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="status" value="rejected">
+                                <button type="submit" class="btn btn-danger text-white" onclick="return confirm('Reject this product?')">
+                                     Reject Product
+                                </button>
+                            </form>
+                        @endif
+
+                    </div>
+                </div>
+            </div>
+            
 
 
             <h5 class="mb-3">Product Images</h5>
@@ -70,7 +106,7 @@
             @endif
 
 
-            <div class="d-flex gap-2 mt-4">
+            <div class="d-flex gap-2 mt-4 pt-3 border-top">
                 <a href="{{ route('product.edit', $product->id) }}" class="btn btn-info">
                     Update
                 </a>

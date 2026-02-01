@@ -125,4 +125,27 @@ class ProductController extends Controller
 
         return redirect()->route('product.index')->with('success', 'Product deleted successfully');
     }
+
+    /**
+     * Change the status of the specified resource.
+     */
+    public function changeStatus(Request $request, string $id)
+    {
+        $request->validate([
+            'status' => 'required|in:approved,rejected,pending',
+        ]);
+
+        $product = Product::findOrFail($id);
+
+        $product->update([
+            'status' => $request->status,
+            'reviewed_by' => auth('admin')->id(),
+        ]);
+
+        $message = $request->status == 'approved' 
+            ? 'Product has been approved successfully!' 
+            : 'Product has been rejected.';
+
+        return redirect()->back()->with('success', $message);
+    }
 }
