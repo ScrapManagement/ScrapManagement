@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\DashBoard\Role;
+namespace App\Http\Controllers\DashBoard\User;
 
 
-use App\Http\Controllers\Controller;
+use App\Models\User\Role;
 use Illuminate\Http\Request;
-use App\Models\Role\Role;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\DashBoard\Role\RoleRequest;
 
 class RoleController extends Controller
