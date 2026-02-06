@@ -6,6 +6,7 @@ use App\Http\Controllers\DashBoard\Admin\AdminController;
 use App\Http\Controllers\DashBoard\Admin\LoginController;
 use App\Http\Controllers\DashBoard\Product\ProductController;
 use App\Http\Controllers\DashBoard\Category\CategoryController;
+use App\Http\Controllers\DashBoard\Order\OrderController;
 
 
 Route::get('loginAdmin', [LoginController::class, 'index'])->name('login.index');
@@ -24,5 +25,5 @@ Route::middleware(['auth:admin', 'is.admin'])->group(function () {
     Route::resource("product", ProductController::class);
     Route::patch('/product/{id}/status', [ProductController::class, 'changeStatus'])
     ->name('product.changeStatus');
-
+    Route::resource("order", OrderController::class);
 });

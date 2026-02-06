@@ -16,6 +16,7 @@
     <!-- Layout styles -->
     <link rel="stylesheet" href="{{asset('dash')}}/css/style.css">
     <!-- End layout styles -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     <link rel="shortcut icon" href="{{asset('dash')}}/images/favicon.ico" />
   </head>
   <body>
