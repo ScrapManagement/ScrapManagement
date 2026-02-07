@@ -50,6 +50,7 @@ class OrderController extends Controller
             OrderItem::create([
                 'order_id'   => $order->id,
                 'product_id' => $product->id,
+                'seller_id'  => $product->user_id,
                 'price'      => $product->price,
                 'quantity'   => $item['quantity'],
                 'subtotal'   => $subtotal,
