@@ -5,10 +5,12 @@ namespace App\Http\Controllers\DashBoard\User;
 use App\Models\User\User;
 use Illuminate\Http\Request;
 use App\Models\Product\Category;
+use App\Services\User\OtpService;
+use App\Services\User\SmsService;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DashBoard\User\UpdateUserRequest;
-use App\Http\Requests\DashBoard\User\UserRequest;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\DashBoard\User\UserRequest;
+use App\Http\Requests\DashBoard\User\UpdateUserRequest;
 
 class UserController extends Controller
 {
@@ -35,7 +37,18 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        User::create($request->toArray());
+        $user = User::create($request->toArray());
+        if ($user->phone_verified_at) {
+            return back()->withErrors(['phone' => 'الرقم متفعل بالفعل']);
+        }
+        $otp = app(OtpService::class)->generate($user);
+     //   app(SmsService::class)->sendOtp($user->phone, $otp);
+        if (! app(SmsService::class)->sendOtp($user->phone, $otp)) {
+            return back()->withErrors([
+                'phone' => 'فشل إرسال الرسالة'
+            ]);
+        }
+
         return to_route('user.index')->with('success', 'User added successfully');
     }
 
@@ -45,7 +58,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $user = User::with('category')->findOrFail($id);
-        return view('DashBoard.User.show', compact('user' ));
+        return view('DashBoard.User.show', compact('user'));
     }
 
     /**
