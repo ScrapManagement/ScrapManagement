@@ -28,11 +28,11 @@
                             <td>{{ $admin->email }}</td>
                             <td>{{ $admin->phone }}</td>
                             <td class="d-flex gap-2">
-                                @if (auth('admin')->id() === $admin->id)
+                                @if (auth('admin-web')->id() === $admin->id)
                                     <a href="{{ route('admin.show', $admin->id) }}" class="btn btn-primary  btn-sm">
                                         View
                                     </a>
-                                    
+
                                     <a href="{{ route('admin.edit', $admin->id) }}" class="btn btn-info  btn-sm">Update</a>
                                 @endif
                             </td>
