@@ -22,19 +22,19 @@ class UpdateAdminRequest extends FormRequest
      */
     public function rules(): array
     {
-        $adminId = auth()->guard('admin')->id();
+        $adminId = auth()->guard('admin-web')->id();
 
         return [
-            'name'  => ['required', 'string', 'max:255'],
+            'name'  => ['sometimes', 'string', 'max:255'],
 
             'email' => [
-                'required',
+                'sometimes',
                 'email',
                 Rule::unique('admins', 'email')->ignore($adminId),
             ],
 
             'phone' => [
-                'required',
+                'sometimes',
                 Rule::unique('admins', 'phone')->ignore($adminId),
             ],
 
