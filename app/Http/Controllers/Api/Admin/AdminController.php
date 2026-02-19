@@ -146,8 +146,12 @@ class AdminController extends Controller
 
     public function trashed()
     {
-        $admins = Admin::onlyTrashed()->latest()->paginate(10);
-        return AdminResource::collection($admins);
+        $admins = Admin::onlyTrashed()->latest()->get();
+        return response()->json([
+            'status'  => true,
+            'message' => 'Trashed admins retrieved successfully',
+            'data'    => AdminResource::collection($admins),
+        ], 200);
     }
 
     public function restore(string $id)
@@ -159,6 +163,13 @@ class AdminController extends Controller
                 'status'  => false,
                 'message' => 'Admin not found',
             ], 404);
+        }
+        
+        if (!$admin->trashed()) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Admin is not deleted',
+            ], 400);
         }
 
         $admin->restore();
