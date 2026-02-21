@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\AdminAuthController;
 use App\Http\Controllers\Api\Admin\AdminController;
+use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User\AuthController;
 use App\Http\Controllers\Api\User\UserController;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,9 @@ Route::prefix('admin')
         Route::get('/trashed', [AdminController::class, 'trashed']);
         Route::delete('{id}/force',  [AdminController::class, 'forceDelete']);
         Route::post('{id}/restore', [AdminController::class, 'restore']);
+
+        //Products
+        Route::post('products/{id}/status',  [ProductController::class, 'changeStatus']);
     });
 
 
@@ -61,4 +65,22 @@ Route::prefix('user')
         Route::delete('{id}',           [UserController::class, 'softDelete']);
         Route::delete('{id}/force',     [UserController::class, 'forceDelete']);
         Route::post('{id}/restore',     [UserController::class, 'restore']);
+    });
+
+Route::prefix('products')
+    ->middleware('auth:api')
+    ->group(function () {
+
+        Route::get('/',           [ProductController::class, 'index']);
+        Route::post('/',          [ProductController::class, 'store']);
+
+        Route::get('/trashed',    [ProductController::class, 'trashed']);
+
+        Route::get('{id}',        [ProductController::class, 'show']);
+        Route::post('{id}',        [ProductController::class, 'update']);
+
+        Route::delete('{id}',     [ProductController::class, 'softDelete']);      // soft
+        Route::delete('{id}/force', [ProductController::class, 'forceDelete']); // hard
+
+        Route::post('{id}/restore', [ProductController::class, 'restore']);
     });
