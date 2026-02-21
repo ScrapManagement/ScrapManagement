@@ -79,8 +79,8 @@ Route::prefix('products')
         Route::get('{id}',        [ProductController::class, 'show']);
         Route::post('{id}',        [ProductController::class, 'update']);
 
-        Route::delete('{id}',     [ProductController::class, 'softDelete']);      // soft
-        Route::delete('{id}/force', [ProductController::class, 'forceDelete']); // hard
+        Route::delete('{id}',     [ProductController::class, 'softDelete']);      
+        Route::delete('{id}/force', [ProductController::class, 'forceDelete']); 
 
         Route::post('{id}/restore', [ProductController::class, 'restore']);
     });
