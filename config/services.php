@@ -41,5 +41,12 @@ return [
         'from' => env('VONAGE_SMS_FROM'),
     ],
 
+    'smsmisr' => [
+        'username' => env('SMSMISr_USERNAME'),
+        'password' => env('SMSMISr_PASSWORD'),
+        'sender'   => env('SMSMISr_SENDER'),
+        'base_url' => env('SMSMISr_BASE_URL'),
+    ],
+
 
 ];

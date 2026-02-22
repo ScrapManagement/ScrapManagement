@@ -2,58 +2,66 @@
 
 namespace App\Services\User;
 
+use Illuminate\Support\Facades\Http;
+
 
 class SmsService
 {
-    protected $client;
+    protected string $baseUrl;
+    protected string $username;
+    protected string $password;
+    protected string $sender;
 
     public function __construct()
     {
-        $this->client = new \Vonage\Client(
-            new \Vonage\Client\Credentials\Basic(
-                config('services.vonage.key'),
-                config('services.vonage.secret')
-            )
-        );
+        $this->baseUrl  = config('services.smsmisr.base_url');
+        $this->username = config('services.smsmisr.username');
+        $this->password = config('services.smsmisr.password');
+        $this->sender   = config('services.smsmisr.sender');
     }
 
     public function sendOtp(string $phone, string $otp): bool
     {
-        $message = "كود التحقق: $otp\nصالح لمدة دقيقتين";
+        $message = "كود التحقق: $otp صالح لمدة دقيقتين";
 
-        $response = $this->client->sms()->send(
-            new \Vonage\SMS\Message\SMS(
-                $phone,
-                config('services.vonage.from'),
-                $message
-            )
-        );
+        $response = Http::post($this->baseUrl . '/SMS/', [
+            'username' => $this->username,
+            'password' => $this->password,
+            'language' => 2, // 1=English , 2=Arabic
+            'sender'   => $this->sender,
+            'mobile'   => $phone,
+            'message'  => $message,
+        ]);
 
-        return $response->current()->getStatus() === 0;
+        if (!$response->ok()) {
+            return false;
+        }
+
+        $data = $response->json();
+
+        return isset($data['code']) && $data['code'] == "1901";
     }
 
     public function test(): array
     {
         try {
-            $response = $this->client->sms()->send(
-                new \Vonage\SMS\Message\SMS(
-                    '+201011581323',
-                    config('services.vonage.from'),
-                    'Hello from Vonage SMS API!'
-                )
-            );
-
-            $sms = $response->current();
+            $response = Http::post($this->baseUrl . '/OTP/', [
+                'username' => $this->username,
+                'password' => $this->password,
+                'language' => 1,
+                'sender'   => $this->sender,
+                'mobile'   => '201271491240',
+                'message'  => 'Test SMS From Laravel',
+            ]);
 
             return [
-                'success'    => $sms->getStatus() === 0,
-                'status'     => $sms->getStatus(),
-                'message_id' => $sms->getMessageId(),
+                'success' => $response->ok(),
+                'response' => $response->json(),
             ];
         } catch (\Throwable $e) {
             return [
                 'success' => false,
-                'error'   => $e->getMessage(),
+                'error' => $e->getMessage(),
             ];
         }
     }
