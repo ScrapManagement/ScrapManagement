@@ -2,6 +2,11 @@
 
 use App\Http\Controllers\Api\Admin\AdminAuthController;
 use App\Http\Controllers\Api\Admin\AdminController;
+use App\Http\Controllers\Api\Payment\PackageController;
+use App\Http\Controllers\Api\Payment\PackagePaymentController;
+use App\Http\Controllers\Api\Payment\PaymentController;
+use App\Http\Controllers\Api\Payment\UnlockController;
+use App\Http\Controllers\Api\Payment\WalletController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User\AuthController;
 use App\Http\Controllers\Api\User\UserController;
@@ -79,8 +84,40 @@ Route::prefix('products')
         Route::get('{id}',        [ProductController::class, 'show']);
         Route::post('{id}',        [ProductController::class, 'update']);
 
-        Route::delete('{id}',     [ProductController::class, 'softDelete']);      
-        Route::delete('{id}/force', [ProductController::class, 'forceDelete']); 
-
+        Route::delete('{id}',     [ProductController::class, 'softDelete']);
+        Route::delete('{id}/force', [ProductController::class, 'forceDelete']);
         Route::post('{id}/restore', [ProductController::class, 'restore']);
+
+        Route::get('{id}/unlock-cost',        [ProductController::class, 'getUnlockCost']);
+        Route::post('/{id}/unlock', [ProductController::class, 'unlock']);
     });
+
+Route::prefix('wallet')
+    ->middleware('auth:api')
+    ->group(function () {
+
+        Route::get('/balance', [WalletController::class, 'balance']);
+        Route::get('/transactions', [WalletController::class, 'transactions']);
+    });
+
+Route::prefix('packages')
+    ->middleware('auth:api')
+    ->group(function () {
+        Route::post('{id}/pay', [PackageController::class, 'pay']);
+    });
+
+Route::prefix('packages')
+    ->middleware('auth:admin-api')
+    ->group(function () {
+        Route::get('/', [PackageController::class, 'index']);
+        Route::post('/', [PackageController::class, 'store']);
+        Route::get('{id}', [PackageController::class, 'show']);
+        Route::post('{id}', [PackageController::class, 'update']);
+        Route::delete('{id}', [PackageController::class, 'destroy']);
+        Route::post('{id}/status', [PackageController::class, 'changeStatus']);
+    });
+
+
+Route::get('/payment/callback', [PaymentController::class, 'callback']);
+Route::get('/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/failed', [PaymentController::class, 'failed'])->name('payment.failed');
