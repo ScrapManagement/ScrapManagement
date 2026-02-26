@@ -8,6 +8,7 @@ use App\Http\Requests\DashBoard\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product\Image;
 use App\Models\Product\Product;
+use App\Services\Payment\CoinService;
 use App\Services\Product\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -243,5 +244,43 @@ class ProductController extends Controller
             'message' => $message,
             'data'    => new ProductResource($product->load(['category', 'images'])),
         ], 200);
+    }
+
+    public function getUnlockCost($productId, CoinService $coinService)
+    {
+        $product = Product::find($productId);
+
+        if (!$product) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Product not found',
+            ], 404);
+        }
+
+        $cost = $coinService->calculateUnlockCost($product);
+
+        return response()->json([
+            'unlock_cost' => $cost,
+            'user_coins' => auth()->user()->coins,
+        ]);
+    }
+
+    public function unlock($productId, CoinService $coinService)
+    {
+        $product = Product::findOrFail($productId);
+
+        if (!$product) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Product not found',
+            ], 404);
+        }
+
+        $result = $coinService->unlockProduct(auth()->user(), $product);
+
+        return response()->json([
+            'status' => $result,
+            'coins' => auth()->user()->fresh()->coins
+        ]);
     }
 }

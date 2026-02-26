@@ -3,14 +3,17 @@
 namespace App\Models\User;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\User\Role;
+use App\Models\Payment\CoinTransaction;
+use App\Models\Payment\Payment;
+use App\Models\Payment\ProductUnlock;
+use App\Models\Product\Category;
 use App\Models\Product\Order;
 use App\Models\Product\Product;
-use App\Models\Product\Category;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -30,6 +33,7 @@ class User extends Authenticatable implements JWTSubject
         'phone',
         'city',
         'region',
+        'coins',
         'category_id'
     ];
 
@@ -104,5 +108,20 @@ class User extends Authenticatable implements JWTSubject
     public function orders()
     {
         return $this->hasMany(Order::class, 'buyer_id');
+    }
+
+    public function coinTransactions()
+    {
+        return $this->hasMany(CoinTransaction::class);
+    }
+
+    public function unlockedProducts()
+    {
+        return $this->hasMany(ProductUnlock::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 }
