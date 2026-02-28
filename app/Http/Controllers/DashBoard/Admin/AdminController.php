@@ -6,6 +6,8 @@ use App\Models\Admin\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DashBoard\Admin\AdminRequest;
+use App\Http\Requests\DashBoard\Admin\UpdateAdminRequest;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -15,7 +17,7 @@ class AdminController extends Controller
     public function index()
     {
         $Admin = Admin::get();
-        return view("DashBoard.admin.view", compact("Admin"));
+        return view("DashBoard.Admin.view", compact("Admin"));
     }
 
     /**
@@ -23,7 +25,7 @@ class AdminController extends Controller
      */
     public function create()
     {
-        return view("DashBoard.admin.add");
+        return view("DashBoard.Admin.add");
     }
 
     /**
@@ -41,8 +43,8 @@ class AdminController extends Controller
     public function show(string $id)
     {
         //$admin = Admin::findOrfail($id);
-        $admin = auth()->guard('admin')->user();
-        return view("DashBoard.admin.show", compact("admin"));
+        $admin = auth()->guard('admin-web')->user();
+        return view("DashBoard.Admin.show", compact("admin"));
     }
 
     /**
@@ -50,20 +52,33 @@ class AdminController extends Controller
      */
     public function edit(string $id)
     {
-        $admin = auth()->guard('admin')->user();
-        return view('DashBoard.admin.update', compact('admin'));
+        $admin = auth()->guard('admin-web')->user();
+        return view('DashBoard.Admin.update', compact('admin'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateAdminRequest $request, string $id)
     {
-        $admin = auth()->guard('admin')->user();
+        $admin = auth()->guard('admin-web')->user();
         // $admin = Admin::findOrfail($id);
 
-        $data = $request->except("_token", "_method");
-        $admin->update($data);
+        $admin->update(
+            $request->only(['name', 'email', 'phone'])
+        );
+        if ($request->filled('password')) {
+
+            if (!Hash::check($request->old_password, $admin->password)) {
+                return back()->withErrors([
+                    'old_password' => 'Old password is incorrect'
+                ]);
+            }
+            $admin->update([
+                'password' => $request->password
+            ]);
+        }
+
 
         return to_route("admin.index")->with("success", "Data updated successfully");
     }
@@ -74,6 +89,6 @@ class AdminController extends Controller
     public function destroy(string $id)
     {
         Admin::where("id", $id)->delete();
-       return to_route("admin.index")->with("success", "Admin deleted successfully");
+        return to_route("admin.index")->with("success", "Admin deleted successfully");
     }
 }

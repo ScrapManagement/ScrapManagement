@@ -16,6 +16,7 @@
     <!-- Layout styles -->
     <link rel="stylesheet" href="{{asset('dash')}}/css/style.css">
     <!-- End layout styles -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     <link rel="shortcut icon" href="{{asset('dash')}}/images/favicon.ico" />
   </head>
   <body>
@@ -48,7 +49,7 @@
                   <span class="availability-status online"></span>
                 </div>
                 <div class="nav-profile-text">
-                  <p class="mb-1 text-black">{{ auth('admin')->user()->name; }}</p>
+                  <p class="mb-1 text-black">{{ auth('admin-web')->user()->name; }}</p>
                 </div>
               </a>
               <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">

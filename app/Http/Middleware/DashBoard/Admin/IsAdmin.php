@@ -16,7 +16,7 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::guard('admin')->check()) {
+        if (Auth::guard('admin-web')->check() ||Auth::guard('admin-web')->check()) {
             return $next($request);
         }
 
