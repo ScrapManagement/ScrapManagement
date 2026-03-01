@@ -18,3 +18,7 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php'; */
+/* Route::get('/sms-test', function () {
+    return app(\App\Services\User\SmsService::class)->test();
+}); */
+require __DIR__.'/auth.php';
