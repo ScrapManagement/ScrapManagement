@@ -40,8 +40,16 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-         'admin' => [
+        'admin-web' => [
             'driver' => 'session',
+            'provider' => 'admins',
+        ],
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
+        'admin-api' => [
+            'driver' => 'jwt',
             'provider' => 'admins',
         ],
     ],
@@ -66,11 +74,15 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => env('AUTH_MODEL', App\Models\User\User::class),
         ],
-         'admins' => [
+        'admins' => [
             'driver' => 'eloquent',
             'model' =>  App\Models\Admin\Admin::class,
+        ],
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
         ],
 
         // 'users' => [

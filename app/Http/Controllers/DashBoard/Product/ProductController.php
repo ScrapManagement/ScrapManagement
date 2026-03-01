@@ -37,7 +37,7 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $product = Product::create([
-            'user_id'     => /* Auth::id() */ 1,
+            'user_id'     => /* Auth::id() */ 5,
             'category_id' => $request->category_id,
             'name'        => $request->name,
             'description' => $request->description,
@@ -142,8 +142,8 @@ class ProductController extends Controller
             'reviewed_by' => auth('admin')->id(),
         ]);
 
-        $message = $request->status == 'approved' 
-            ? 'Product has been approved successfully!' 
+        $message = $request->status == 'approved'
+            ? 'Product has been approved successfully!'
             : 'Product has been rejected.';
 
         return redirect()->back()->with('success', $message);

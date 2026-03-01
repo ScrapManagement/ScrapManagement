@@ -15,8 +15,8 @@ class LoginController extends Controller
 
     public function logout()
     {
-        if (Auth::guard('admin')->check()) {
-            Auth::guard('admin')->logout();
+        if (Auth::guard('admin-web')->check()) {
+            Auth::guard('admin-web')->logout();
 
             return redirect()->route("login.index");
         } else {
@@ -27,7 +27,7 @@ class LoginController extends Controller
     public function check(Request $request)
     {
         $credentials = $request->only('email', 'password');
-        if (Auth::guard('admin')->attempt($credentials)) {
+        if (Auth::guard('admin-web')->attempt($credentials)) {
             return redirect()->route("admin.index");
         }
 

@@ -49,7 +49,7 @@
                   <span class="availability-status online"></span>
                 </div>
                 <div class="nav-profile-text">
-                  <p class="mb-1 text-black">{{ auth('admin')->user()->name; }}</p>
+                  <p class="mb-1 text-black">{{ auth('admin-web')->user()->name; }}</p>
                 </div>
               </a>
               <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">

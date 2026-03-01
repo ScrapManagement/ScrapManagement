@@ -23,7 +23,7 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'sometimes|string|max:255',
             'email' => [
                 'nullable',
                 'email',
@@ -31,15 +31,15 @@ class UpdateUserRequest extends FormRequest
                 Rule::unique('users', 'email')->ignore($this->user),
             ],
             'phone' => [
-                'required',
+                'sometimes',
                 'string',
-                'max:12',
+                'max:13',
                 Rule::unique('users', 'phone')->ignore($this->user),
             ],
             'password' => 'nullable|string|min:6|confirmed',
-            'city'        => 'required|string|max:255',
-            'region'      => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
+            'city'        => 'sometimes|string|max:255',
+            'region'      => 'sometimes|string|max:255',
+            'category_id' => 'sometimes|exists:categories,id',
         ];
     }
 

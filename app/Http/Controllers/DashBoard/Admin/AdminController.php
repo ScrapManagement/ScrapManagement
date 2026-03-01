@@ -43,7 +43,7 @@ class AdminController extends Controller
     public function show(string $id)
     {
         //$admin = Admin::findOrfail($id);
-        $admin = auth()->guard('admin')->user();
+        $admin = auth()->guard('admin-web')->user();
         return view("DashBoard.Admin.show", compact("admin"));
     }
 
@@ -52,7 +52,7 @@ class AdminController extends Controller
      */
     public function edit(string $id)
     {
-        $admin = auth()->guard('admin')->user();
+        $admin = auth()->guard('admin-web')->user();
         return view('DashBoard.Admin.update', compact('admin'));
     }
 
@@ -61,7 +61,7 @@ class AdminController extends Controller
      */
     public function update(UpdateAdminRequest $request, string $id)
     {
-        $admin = auth()->guard('admin')->user();
+        $admin = auth()->guard('admin-web')->user();
         // $admin = Admin::findOrfail($id);
 
         $admin->update(
