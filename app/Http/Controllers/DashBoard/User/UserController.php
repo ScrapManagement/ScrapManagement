@@ -37,19 +37,34 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $user = User::create($request->toArray());
-        if ($user->phone_verified_at) {
-            return back()->withErrors(['phone' => 'الرقم متفعل بالفعل']);
+        $existingUser = User::where('phone', $request->phone)
+            ->whereNotNull('phone_verified_at')
+            ->first();
+
+        if ($existingUser) {
+            return back()->withErrors([
+                'phone' => 'الرقم متفعل بالفعل'
+            ]);
         }
-        $otp = app(OtpService::class)->generate($user);
-     //   app(SmsService::class)->sendOtp($user->phone, $otp);
-        if (! app(SmsService::class)->sendOtp($user->phone, $otp)) {
+
+        $user = User::create($request->validated());
+
+        $otpService = app(OtpService::class);
+        $smsService = app(SmsService::class);
+
+        $otp = $otpService->generate($user);
+
+        if (! $smsService->sendOtp($user->phone, $otp)) {
+
+            $user->delete();
+
             return back()->withErrors([
                 'phone' => 'فشل إرسال الرسالة'
             ]);
         }
 
-        return to_route('user.index')->with('success', 'User added successfully');
+        return to_route('user.index')
+            ->with('success', 'User added successfully');
     }
 
     /**

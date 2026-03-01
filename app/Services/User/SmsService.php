@@ -14,54 +14,44 @@ class SmsService
 
     public function __construct()
     {
-        $this->baseUrl  = config('services.smsmisr.base_url');
-        $this->username = config('services.smsmisr.username');
-        $this->password = config('services.smsmisr.password');
-        $this->sender   = config('services.smsmisr.sender');
+        $this->baseUrl  = "https://otp.sell-io.app/send-otp";
     }
 
     public function sendOtp(string $phone, string $otp): bool
     {
-        $message = "كود التحقق: $otp صالح لمدة دقيقتين";
 
-        $response = Http::post($this->baseUrl . '/SMS/', [
-            'username' => $this->username,
-            'password' => $this->password,
-            'language' => 2, // 1=English , 2=Arabic
-            'sender'   => $this->sender,
-            'mobile'   => $phone,
-            'message'  => $message,
+        $response = Http::post($this->baseUrl . '/send-otp', [
+            'phone'   => $phone,
+            'message' => 'Your verification code is: ' . $otp,
+            'otp'     => $otp,
         ]);
-
         if (!$response->ok()) {
             return false;
         }
 
         $data = $response->json();
 
-        return isset($data['code']) && $data['code'] == "1901";
+        return isset($data['success']) && $data['success'] === true;
     }
 
     public function test(): array
     {
         try {
-            $response = Http::post($this->baseUrl . '/OTP/', [
-                'username' => $this->username,
-                'password' => $this->password,
-                'language' => 1,
-                'sender'   => $this->sender,
-                'mobile'   => '201271491240',
-                'message'  => 'Test SMS From Laravel',
+            $response = Http::post('https://otp.sell-io.app/send-otp', [
+                'phone'   => '+201271491240', 
+                'message' => 'Your verification code is: ',
+                'otp'     => '123456',
             ]);
 
             return [
-                'success' => $response->ok(),
+                'status'   => $response->status(),
+                'success'  => $response->successful(),
                 'response' => $response->json(),
             ];
         } catch (\Throwable $e) {
             return [
                 'success' => false,
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ];
         }
     }

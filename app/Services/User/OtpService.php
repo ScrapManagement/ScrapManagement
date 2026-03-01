@@ -19,7 +19,7 @@ class OtpService
 
         OtpCode::create([
             'user_id' => $user->id,
-            'code' => Hash::make($code),
+            'code' => $code,
             'expires_at' => now()->addMinutes(2),
         ]);
 
@@ -29,13 +29,12 @@ class OtpService
     public function verify(User $user, string $code): bool
     {
         $otp = OtpCode::where('user_id', $user->id)
-            ->where('code', $code)
             ->whereNull('verified_at')
             ->where('expires_at', '>', now())
             ->latest()
             ->first();
 
-        if (! $otp) {
+        if (! $otp || ! Hash::check($code, $otp->code)) {
             return false;
         }
 
