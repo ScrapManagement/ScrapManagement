@@ -34,7 +34,8 @@ class User extends Authenticatable implements JWTSubject
         'city',
         'region',
         'coins',
-        'category_id'
+        'category_id',
+        'phone_verified_at'
     ];
 
     /**
@@ -119,6 +120,8 @@ class User extends Authenticatable implements JWTSubject
     public function latestOtp()
     {
         return $this->hasOne(OtpCode::class)->latestOfMany();
+    }
+
     public function coinTransactions()
     {
         return $this->hasMany(CoinTransaction::class);

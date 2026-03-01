@@ -14,31 +14,34 @@ class SmsService
 
     public function __construct()
     {
-        $this->baseUrl  = "https://otp.sell-io.app/send-otp";
+        $this->baseUrl  = "https://otp.sell-io.app";
     }
 
     public function sendOtp(string $phone, string $otp): bool
     {
+        try {
+            $response = Http::post($this->baseUrl . '/send-otp', [
+                'phone'   => $phone,
+                'message' => 'Your verification code is: ',
+                'otp'     => $otp,
+            ]);
 
-        $response = Http::post($this->baseUrl . '/send-otp', [
-            'phone'   => $phone,
-            'message' => 'Your verification code is: ' . $otp,
-            'otp'     => $otp,
-        ]);
-        if (!$response->ok()) {
+            $data = $response->json() ?? [];
+
+            info('OTP Response', $data);
+
+            return isset($data['success']) && $data['success'] === true;
+        } catch (\Throwable $e) {
+            info('OTP Error', ['error' => $e->getMessage(), 'phone' => $phone, 'otp' => $otp]);
             return false;
         }
-
-        $data = $response->json();
-
-        return isset($data['success']) && $data['success'] === true;
     }
 
     public function test(): array
     {
         try {
             $response = Http::post('https://otp.sell-io.app/send-otp', [
-                'phone'   => '+201271491240', 
+                'phone'   => '+201271491240',
                 'message' => 'Your verification code is: ',
                 'otp'     => '123456',
             ]);

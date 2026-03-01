@@ -3,9 +3,7 @@
 use App\Http\Controllers\Api\Admin\AdminAuthController;
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\Payment\PackageController;
-use App\Http\Controllers\Api\Payment\PackagePaymentController;
 use App\Http\Controllers\Api\Payment\PaymentController;
-use App\Http\Controllers\Api\Payment\UnlockController;
 use App\Http\Controllers\Api\Payment\WalletController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User\AuthController;
@@ -18,6 +16,8 @@ Route::prefix('auth')->group(function () {
 
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [UserController::class, 'store']);
+    Route::post('verify-otp', [UserController::class, 'verifyOtp']);
+    Route::get('resend-otp', [UserController::class, 'resendOtp']);
 });
 
 Route::prefix('authAdmin')->group(function () {
@@ -50,7 +50,7 @@ Route::prefix('admin')
 
 
 Route::prefix('user')
-    ->middleware('auth:api')
+    ->middleware('auth:api','phone_verified')
     ->group(function () {
 
         // Auth Actions
@@ -73,7 +73,7 @@ Route::prefix('user')
     });
 
 Route::prefix('products')
-    ->middleware('auth:api')
+    ->middleware('auth:api','phone_verified')
     ->group(function () {
 
         Route::get('/',           [ProductController::class, 'index']);
@@ -93,7 +93,7 @@ Route::prefix('products')
     });
 
 Route::prefix('wallet')
-    ->middleware('auth:api')
+    ->middleware('auth:api','phone_verified')
     ->group(function () {
 
         Route::get('/balance', [WalletController::class, 'balance']);
@@ -101,7 +101,7 @@ Route::prefix('wallet')
     });
 
 Route::prefix('packages')
-    ->middleware('auth:api')
+    ->middleware('auth:api','phone_verified')
     ->group(function () {
         Route::post('{id}/pay', [PackageController::class, 'pay']);
     });

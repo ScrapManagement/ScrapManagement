@@ -26,6 +26,17 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Invalid phone or password.'], 401);
             }
 
+            $user = auth($this->guard)->user();
+
+            if (is_null($user->phone_verified_at)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Your phone is not verified.',
+                    'token' => $token,
+                    'needs_verification' => true
+                ], 403);
+            }
+
             return $this->respondWithToken($token);
         } catch (\Exception $e) {
             return response()->json([
@@ -34,6 +45,7 @@ class AuthController extends Controller
             ], 500);
         }
     }
+    
     public function me()
     {
         return response()->json([

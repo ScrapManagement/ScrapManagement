@@ -7,7 +7,10 @@ use App\Http\Requests\DashBoard\User\UpdateUserRequest;
 use App\Http\Requests\DashBoard\User\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User\User;
+use App\Services\User\OtpService;
+use App\Services\User\SmsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -31,13 +34,118 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $user = User::create($request->toArray());
+        try {
+
+            return DB::transaction(function () use ($request) {
+
+                $existingUser = User::where('phone', $request->phone)
+                    ->whereNotNull('phone_verified_at')
+                    ->first();
+
+                if ($existingUser) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'الرقم متفعل بالفعل'
+                    ], 422);
+                }
+
+                $user = User::create($request->validated());
+
+                $token = auth('api')->login($user);
+
+                $otpService = app(OtpService::class);
+                $smsService = app(SmsService::class);
+
+                $otp = $otpService->generate($user);
+
+                if (! $smsService->sendOtp($user->phone, $otp)) {
+                    $user->delete();
+                    throw new \Exception('OTP_SEND_FAILED');
+                }
+
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'User created successfully. OTP sent.',
+                    'data'    => new UserResource($user),
+                    'token_otp'   => $token,
+                ], 201);
+            });
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'فشل إنشاء المستخدم أو إرسال كود التحقق',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|digits:6',
+        ]);
+
+        $user = auth('api')->user();
+
+        if (! $user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
+        $verified = app(OtpService::class)->verify($user, $request->otp);
+
+        if (! $verified) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Invalid or expired OTP'
+            ], 400);
+        }
 
         return response()->json([
             'status'  => true,
-            'message' => 'User created successfully',
-            'data'    => new UserResource($user),
-        ], 201);
+            'message' => 'Phone verified successfully'
+        ]);
+    }
+
+    public function resendOtp()
+    {
+        try {
+            $user = auth('api')->user();
+
+            if (! $user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Unauthenticated'
+                ], 401);
+            }
+
+            if ($user->phone_verified_at) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Phone already verified.'
+                ], 400);
+            }
+
+            $otpService = app(OtpService::class);
+            $smsService = app(SmsService::class);
+
+            $otp = $otpService->generate($user);
+            $smsService->sendOtp($user->phone, $otp);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'A new verification code has been sent to your phone.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to resend OTP.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
