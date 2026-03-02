@@ -46,11 +46,20 @@ Route::prefix('admin')
 
         //Products
         Route::post('products/{id}/status',  [ProductController::class, 'changeStatus']);
+        Route::delete('products/{id}/force', [ProductController::class, 'forceDelete']);
+        Route::post('products/{id}/restore', [ProductController::class, 'restore']);
+        Route::get('products/trashed',    [ProductController::class, 'trashed']);
+
+
+        //User
+        Route::delete('user/{id}/force',     [UserController::class, 'forceDelete']);
+        Route::post('user/{id}/restore',     [UserController::class, 'restore']);
+        Route::get('user/trashed',           [UserController::class, 'trashed']);
     });
 
 
 Route::prefix('user')
-    ->middleware('auth:api','phone_verified')
+    ->middleware('auth:api', 'phone_verified')
     ->group(function () {
 
         // Auth Actions
@@ -61,39 +70,34 @@ Route::prefix('user')
         // CRUD Users
         Route::get('/',                 [UserController::class, 'index']);
         Route::post('/',                [UserController::class, 'store']);
-        Route::get('trashed',           [UserController::class, 'trashed']);
+
 
         Route::get('{id}',              [UserController::class, 'show']);
         Route::get('/profile',              [UserController::class, 'profile']);
         Route::post('{id}',              [UserController::class, 'update']);
 
         Route::delete('{id}',           [UserController::class, 'softDelete']);
-        Route::delete('{id}/force',     [UserController::class, 'forceDelete']);
-        Route::post('{id}/restore',     [UserController::class, 'restore']);
     });
 
 Route::prefix('products')
-    ->middleware('auth:api','phone_verified')
+    ->middleware('auth:api', 'phone_verified')
     ->group(function () {
 
         Route::get('/',           [ProductController::class, 'index']);
         Route::post('/',          [ProductController::class, 'store']);
 
-        Route::get('/trashed',    [ProductController::class, 'trashed']);
 
         Route::get('{id}',        [ProductController::class, 'show']);
         Route::post('{id}',        [ProductController::class, 'update']);
 
         Route::delete('{id}',     [ProductController::class, 'softDelete']);
-        Route::delete('{id}/force', [ProductController::class, 'forceDelete']);
-        Route::post('{id}/restore', [ProductController::class, 'restore']);
 
         Route::get('{id}/unlock-cost',        [ProductController::class, 'getUnlockCost']);
         Route::post('/{id}/unlock', [ProductController::class, 'unlock']);
     });
 
 Route::prefix('wallet')
-    ->middleware('auth:api','phone_verified')
+    ->middleware('auth:api', 'phone_verified')
     ->group(function () {
 
         Route::get('/balance', [WalletController::class, 'balance']);
@@ -101,7 +105,7 @@ Route::prefix('wallet')
     });
 
 Route::prefix('packages')
-    ->middleware('auth:api','phone_verified')
+    ->middleware('auth:api', 'phone_verified')
     ->group(function () {
         Route::post('{id}/pay', [PackageController::class, 'pay']);
     });
