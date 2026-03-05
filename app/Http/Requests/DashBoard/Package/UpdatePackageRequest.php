@@ -21,9 +21,9 @@ class UpdatePackageRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('package');
+        $packageId = $this->route('id');
         return [
-            'name'      => 'sometimes|string|max:255|unique:packages,name,' . $id,
+            'name'      => 'sometimes|string|max:255|unique:packages,name,' . $packageId,
             'price'     => 'sometimes|numeric|min:0',
             'coins'     => 'sometimes|integer|min:1',
             'is_active' => 'sometimes|boolean',

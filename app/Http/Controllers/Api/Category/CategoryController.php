@@ -3,58 +3,69 @@
 namespace App\Http\Controllers\Api\Category;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product\Category;
 use App\Http\Requests\DashBoard\Category\CategoryRequest;
+use App\Http\Requests\DashBoard\Category\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
+use App\Models\Product\Category;
 
 class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::all();
-        
+        $categories = Category::with(['parent', 'children'])->get();
+
         return response()->json([
-            'status' => 'success',
-            'data' => $categories
+            'status' => true,
+            'message' => 'Categories retrieved successfully',
+            'data'   => CategoryResource::collection($categories)
         ], 200);
     }
 
     public function store(CategoryRequest $request)
     {
-        $category = \App\Models\Product\Category::create([
+        $category = Category::create([
             'name' => $request->name,
             'parent_id' => $request->parent_id,
             'created_by' => auth('admin-api')->id(),
         ]);
 
         return response()->json([
-            'status' => 'success',
+            'status' => true,
             'message' => 'Category created successfully',
-            'data' => $category
+            'data' => new CategoryResource($category->load(['parent', 'children'])),
         ], 201);
-    }     
-    
+    }
+
 
     public function show(string $id)
     {
-        $category = Category::find($id);
+        $category =  Category::with(['parent', 'children'])->find($id);
 
         if (!$category) {
-            return response()->json(['status' => 'error', 'message' => 'Not Found'], 404);
+            return response()->json([
+                'status'  => false,
+                'message' => 'Category not found',
+            ], 404);
         }
 
         return response()->json([
-            'status' => 'success',
-            'data' => $category
+            'status' => 'true',
+            'message' => 'Category retrieved successfully',
+            'data' =>  new CategoryResource($category),
         ], 200);
     }
 
-    public function update(CategoryRequest $request, string $id)
+    public function update(UpdateCategoryRequest $request, string $id)
     {
         $category = Category::find($id);
 
         if (!$category) {
-            return response()->json(['status' => 'error', 'message' => 'Not Found'], 404);
+            return response()->json([
+                'status'  => false,
+                'message' => 'Category not found',
+            ], 404);
         }
+
 
         $category->update([
             'name' => $request->name,
@@ -62,9 +73,9 @@ class CategoryController extends Controller
         ]);
 
         return response()->json([
-            'status' => 'success',
+            'status'  => true,
             'message' => 'Category updated successfully',
-            'data' => $category
+            'data'    => new CategoryResource($category->load(['parent', 'children'])),
         ], 200);
     }
 
@@ -73,46 +84,57 @@ class CategoryController extends Controller
         $category = Category::find($id);
 
         if (!$category) {
-            return response()->json(['status' => 'error', 'message' => 'Not Found'], 404);
+            return response()->json([
+                'status'  => false,
+                'message' => 'Category not found',
+            ], 404);
         }
 
-        $category->delete(); 
+        $category->delete();
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Category deleted successfully'
+            'status'  => true,
+            'message' => 'Category soft deleted successfully',
         ], 200);
     }
 
     public function trashed()
     {
-        $categories = Category::onlyTrashed()->get();
-        
+        $categories = Category::with(['parent', 'children'])->onlyTrashed()->get();
+
         return response()->json([
-            'status' => 'success',
-            'data' => $categories
+            'status'  => true,
+            'message' => 'Trashed categories retrieved successfully',
+            'data'    => CategoryResource::collection($categories),
         ], 200);
     }
 
-    
+
     public function restore(string $id)
     {
         $category = Category::withTrashed()->find($id);
 
         if (!$category) {
-            return response()->json(['status' => 'error', 'message' => 'Not Found'], 404);
+            return response()->json([
+                'status'  => false,
+                'message' => 'Category not found',
+            ], 404);
         }
 
         if (!$category->trashed()) {
-            return response()->json(['status' => 'error', 'message' => 'Category is not deleted'], 400);
+            return response()->json([
+                'status'  => false,
+                'message' => 'Category is not deleted',
+            ], 400);
         }
+
 
         $category->restore();
 
         return response()->json([
-            'status' => 'success',
+            'status'  => true,
             'message' => 'Category restored successfully',
-            'data' => $category
+            'data'    => new CategoryResource($category->load(['parent', 'children'])),
         ], 200);
     }
 
@@ -121,14 +143,17 @@ class CategoryController extends Controller
         $category = Category::withTrashed()->find($id);
 
         if (!$category) {
-            return response()->json(['status' => 'error', 'message' => 'Not Found'], 404);
+            return response()->json([
+                'status'  => false,
+                'message' => 'Category not found',
+            ], 404);
         }
 
         $category->forceDelete();
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Category permanently deleted'
+            'status'  => true,
+            'message' => 'Category permanently deleted successfully',
         ], 200);
     }
 }

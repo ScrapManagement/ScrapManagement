@@ -30,7 +30,7 @@ Route::prefix('authAdmin')->group(function () {
 Route::prefix('admin')
     ->middleware('auth:admin-api')
     ->group(function () {
-        
+
         // 1. Auth Actions & Profile
         Route::get('me',            [AdminAuthController::class, 'me']);
         Route::post('logout',       [AdminAuthController::class, 'logout']);
@@ -57,7 +57,7 @@ Route::prefix('admin')
         // 4. Admins Management
         Route::get('/',        [AdminController::class, 'index']);
         Route::post('/',       [AdminController::class, 'store']);
-        
+
         Route::get('{id}',     [AdminController::class, 'show']);
         Route::post('{id}',    [AdminController::class, 'update']);
         Route::delete('{id}',  [AdminController::class, 'softDelete']);
@@ -110,7 +110,7 @@ Route::prefix('products')
         Route::get('{id}',        [ProductController::class, 'show']);
         Route::post('{id}',       [ProductController::class, 'update']);
         Route::delete('{id}',     [ProductController::class, 'softDelete']);
-
+    });
 Route::prefix('categories')
     ->middleware('auth:api','phone_verified')
     ->group(function () {
