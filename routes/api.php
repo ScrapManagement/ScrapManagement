@@ -53,6 +53,7 @@ Route::prefix('admin')
 
         // 3. Products Management
         Route::post('products/{id}/status',  [ProductController::class, 'changeStatus']);
+        Route::post('products/{id}/material-priority', [ProductController::class, 'updateMaterialPriority']);
 
         // 4. Admins Management
         Route::get('/',        [AdminController::class, 'index']);

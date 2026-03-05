@@ -283,4 +283,30 @@ class ProductController extends Controller
             'coins' => auth()->user()->fresh()->coins
         ]);
     }
+
+     public function updateMaterialPriority(Request $request, string $id)
+    {
+        $request->validate([
+            'material_priority' => 'required|integer|min:1|max:5',
+        ]);
+
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Product not found',
+            ], 404);
+        }
+
+        $product->update([
+            'material_priority' => $request->material_priority,
+        ]);
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Material priority updated successfully',
+            'data'    => new ProductResource($product->load(['category', 'images'])),
+        ], 200);
+    }
 }
