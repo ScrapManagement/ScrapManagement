@@ -22,6 +22,7 @@ class ProductResource extends JsonResource
             'unit'        => $this->unit,
             'price'       => $this->price,
             'status'      => $this->status,
+            'material_priority' => $this->material_priority,
             'category'    => $this->whenLoaded('category', fn() => [
                 'id'   => $this->category->id,
                 'name' => $this->category->name,
