@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
          $middleware->alias([
             'is.admin' => \App\Http\Middleware\DashBoard\Admin\IsAdmin::class,
             'role' => \App\Http\Middleware\DashBoard\User\CheckRole::class,
+            'phone_verified' => \App\Http\Middleware\DashBoard\User\EnsurePhoneIsVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

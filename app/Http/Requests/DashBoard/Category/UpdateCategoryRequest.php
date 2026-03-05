@@ -4,7 +4,7 @@ namespace App\Http\Requests\DashBoard\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CategoryRequest extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,15 +24,14 @@ class CategoryRequest extends FormRequest
         $categoryId = $this->route('id');
 
         return [
-            'name' => 'required|string|max:255|unique:categories,name,' . $categoryId,
+            'name'      => 'sometimes|string|max:255|unique:categories,name,' . $categoryId,
             'parent_id' => 'sometimes|nullable|exists:categories,id|not_in:' . $categoryId,
         ];
     }
 
-    public function messages(): array
+     public function messages(): array
     {
         return [
-            'name.required'      => 'Category name is required',
             'name.unique'        => 'This category name already exists',
             'name.string'        => 'Name must be a string',
             'name.max'           => 'Name must not exceed 255 characters',

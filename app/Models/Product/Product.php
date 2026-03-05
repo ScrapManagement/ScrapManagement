@@ -24,6 +24,7 @@ class Product extends Model
         'unit',
         'price',
         'status',
+        'material_priority',
         'reviewed_by'
     ];
 

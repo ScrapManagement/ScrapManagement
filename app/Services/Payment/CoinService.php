@@ -29,23 +29,21 @@ class CoinService
         });
     }
 
-    public function calculateUnlockCost(Product $product)
+    public function calculateUnlockCost(Product $product): int
     {
-        $cost = 2;
+        $baseCost = 2;
 
-        $cost += floor($product->price / 1000);
+        $priceFactor = floor($product->price / 1000);
 
-        if ($product->quantity > 100) {
-            $cost += 1;
-        }
+        $quantityFactor = floor($product->quantity / 100);
 
-        if ($product->is_premium ?? false) {
-            $cost += 2;
-        }
+        $subTotal = $baseCost + $priceFactor + $quantityFactor;
 
-        return $cost;
+        $totalCost = $subTotal * ($product->material_priority ?? 1);
+
+        return (int) $totalCost;
     }
-
+    
     public function unlockProduct($user, Product $product)
     {
         return DB::transaction(function () use ($user, $product) {

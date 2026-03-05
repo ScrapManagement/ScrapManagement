@@ -34,7 +34,8 @@ class User extends Authenticatable implements JWTSubject
         'city',
         'region',
         'coins',
-        'category_id'
+        'category_id',
+        'phone_verified_at'
     ];
 
     /**
@@ -56,6 +57,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -108,6 +110,16 @@ class User extends Authenticatable implements JWTSubject
     public function orders()
     {
         return $this->hasMany(Order::class, 'buyer_id');
+    }
+
+    public function otps()
+    {
+        return $this->hasMany(OtpCode::class);
+    }
+
+    public function latestOtp()
+    {
+        return $this->hasOne(OtpCode::class)->latestOfMany();
     }
 
     public function coinTransactions()

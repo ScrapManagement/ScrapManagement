@@ -35,6 +35,20 @@ return [
         ],
     ],
 
+    'vonage' => [
+        'key' => env('VONAGE_KEY'),
+        'secret' => env('VONAGE_SECRET'),
+        'from' => env('VONAGE_SMS_FROM'),
+    ],
+
+    'smsmisr' => [
+        'username' => env('SMSMISr_USERNAME'),
+        'password' => env('SMSMISr_PASSWORD'),
+        'sender'   => env('SMSMISr_SENDER'),
+        'base_url' => env('SMSMISr_BASE_URL'),
+    ],
+
+
     'paymob' => [
         'base_url'       => env('PAYMOB_BASE_URL'),
         'api_key'        => env('PAYMOB_API_KEY'),
