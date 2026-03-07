@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('category_id');
+            $table->unsignedInteger('material_priority')->default(1);
             $table->string('name');
             $table->text('description');
             $table->integer('quantity');
