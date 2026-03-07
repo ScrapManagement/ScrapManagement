@@ -87,7 +87,7 @@ Route::prefix('user')
         Route::post('refresh',  [AuthController::class, 'refresh']);
 
         Route::get('/',                 [UserController::class, 'index']);
-        Route::post('/',                [UserController::class, 'store']);
+      //  Route::post('/',                [UserController::class, 'store']);
 
 
         Route::get('/profile',          [UserController::class, 'profile']);
