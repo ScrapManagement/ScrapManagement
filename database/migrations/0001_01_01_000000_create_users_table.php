@@ -22,6 +22,7 @@ return new class extends Migration
            /*  $table->enum('type', ['buyer', 'seller']); */
             $table->string('city');
             $table->string('region');
+            $table->integer('coins')->default(0);
             $table->unsignedBigInteger('category_id')->nullable();
             $table->foreign('category_id')->references('id')->on('categories')->nullOnDelete();
             $table->rememberToken();
