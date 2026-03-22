@@ -45,7 +45,7 @@ class UserController extends Controller
                 if ($existingUser) {
                     return response()->json([
                         'status' => false,
-                        'message' => 'الرقم متفعل بالفعل'
+                        'message' => 'User already exists.'
                     ], 422);
                 }
 
@@ -74,7 +74,7 @@ class UserController extends Controller
 
             return response()->json([
                 'status'  => false,
-                'message' => 'فشل إنشاء المستخدم أو إرسال كود التحقق',
+                'message' => 'User creation or OTP sending failed',
                 'error'   => $e->getMessage(),
             ], 500);
         }
