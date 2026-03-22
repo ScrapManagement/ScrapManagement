@@ -16,9 +16,16 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::guard('admin-web')->check() ||Auth::guard('admin-web')->check()) {
+        if (Auth::guard('admin-web')->check() || Auth::guard('admin-api')->check()) {
             return $next($request);
         }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Access denied.'
+            ], 401); // Unauthorized
+        }
+
 
 
         return redirect()->route("login.index")->withErrors('Access denied.');

@@ -19,6 +19,8 @@ Route::prefix('auth')->group(function () {
     Route::post('register', [UserController::class, 'store']);
     Route::post('verify-otp', [UserController::class, 'verifyOtp']);
     Route::get('resend-otp', [UserController::class, 'resendOtp']);
+    Route::get('categories',        [CategoryController::class, 'index']);
+
 });
 
 Route::prefix('authAdmin')->group(function () {
