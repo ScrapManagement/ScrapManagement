@@ -309,4 +309,25 @@ class ProductController extends Controller
             'data'    => new ProductResource($product->load(['category', 'images'])),
         ], 200);
     }
+
+    public function approvedProducts()
+    {
+        $products = Product::with(['category', 'images'])
+            ->where('status', 'approved')
+            ->latest()
+            ->get();
+
+        if (!$products) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Product not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Approved products retrieved successfully',
+            'data'    => ProductResource::collection($products),
+        ], 200);
+    }
 }
