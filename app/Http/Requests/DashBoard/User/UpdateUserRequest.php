@@ -39,6 +39,7 @@ class UpdateUserRequest extends FormRequest
             'password' => 'nullable|string|min:6|confirmed',
             'city'        => 'sometimes|string|max:255',
             'region'      => 'sometimes|string|max:255',
+            'address'     => 'sometimes|string|max:255|min:10',
             'category_id' => 'sometimes|exists:categories,id',
         ];
     }

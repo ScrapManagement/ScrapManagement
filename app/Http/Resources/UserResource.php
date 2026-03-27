@@ -21,6 +21,8 @@ class UserResource extends JsonResource
             'phone'       => $this->phone,
             'city'        => $this->city,
             'region'      => $this->region,
+            'address'     => $this->address,
+            'coin'        => $this->coin,
             'category'    => $this->whenLoaded('category', fn() => [
                 'id'   => $this->category->id,
                 'name' => $this->category->name,
