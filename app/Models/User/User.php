@@ -35,7 +35,8 @@ class User extends Authenticatable implements JWTSubject
         'region',
         'coins',
         'category_id',
-        'phone_verified_at'
+        'phone_verified_at',
+        'address',
     ];
 
     /**
