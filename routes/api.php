@@ -20,6 +20,7 @@ Route::prefix('auth')->group(function () {
     Route::post('verify-otp', [UserController::class, 'verifyOtp']);
     Route::get('resend-otp', [UserController::class, 'resendOtp']);
     Route::get('categories',        [CategoryController::class, 'index']);
+    Route::get('/packages', [PackageController::class, 'index']);
     Route::get('products/approved',           [ProductController::class, 'approvedProducts']);
 
 });
@@ -129,7 +130,6 @@ Route::prefix('wallet')
 Route::prefix('packages')
     ->middleware('auth:api', 'phone_verified')
     ->group(function () {
-        Route::get('/', [PackageController::class, 'index']);
         Route::post('{id}/pay', [PackageController::class, 'pay']);
     });
 
