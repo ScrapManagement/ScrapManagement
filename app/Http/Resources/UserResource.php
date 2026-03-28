@@ -22,7 +22,7 @@ class UserResource extends JsonResource
             'city'        => $this->city,
             'region'      => $this->region,
             'address'     => $this->address,
-            'coin'        => $this->coin,
+            'coin'        => $this->coins,
             'category'    => $this->whenLoaded('category', fn() => [
                 'id'   => $this->category->id,
                 'name' => $this->category->name,
