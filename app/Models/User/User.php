@@ -137,4 +137,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function favoriteProducts()
+    {
+        return $this->belongsToMany(Product::class, 'favorites')->withTimestamps();
+    }
 }

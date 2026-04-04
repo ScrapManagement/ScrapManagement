@@ -2,13 +2,14 @@
 
 use App\Http\Controllers\Api\Admin\AdminAuthController;
 use App\Http\Controllers\Api\Admin\AdminController;
+use App\Http\Controllers\Api\Category\CategoryController;
 use App\Http\Controllers\Api\Payment\PackageController;
 use App\Http\Controllers\Api\Payment\PaymentController;
 use App\Http\Controllers\Api\Payment\WalletController;
+use App\Http\Controllers\Api\Product\FavoriteController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User\AuthController;
 use App\Http\Controllers\Api\User\UserController;
-use App\Http\Controllers\Api\Category\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -22,7 +23,6 @@ Route::prefix('auth')->group(function () {
     Route::get('categories',        [CategoryController::class, 'index']);
     Route::get('/packages', [PackageController::class, 'index']);
     Route::get('products/approved',           [ProductController::class, 'approvedProducts']);
-
 });
 
 Route::prefix('authAdmin')->group(function () {
@@ -131,6 +131,14 @@ Route::prefix('packages')
     ->middleware('auth:api', 'phone_verified')
     ->group(function () {
         Route::post('{id}/pay', [PackageController::class, 'pay']);
+    });
+
+Route::prefix('favorites')
+    ->middleware('auth:api', 'phone_verified')
+    ->group(function () {
+        Route::post('/{productId}', [FavoriteController::class, 'add']);
+        Route::delete('/{productId}', [FavoriteController::class, 'remove']);
+        Route::get('/', [FavoriteController::class, 'index']);
     });
 
 
