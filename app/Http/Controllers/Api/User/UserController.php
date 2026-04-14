@@ -7,11 +7,13 @@ use App\Http\Requests\DashBoard\User\UpdateUserRequest;
 use App\Http\Requests\DashBoard\User\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User\User;
+use App\Services\Product\ImageService;
 use App\Services\User\OtpService;
 use App\Services\User\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -298,6 +300,123 @@ class UserController extends Controller
             'status'  => true,
             'message' => 'Profile retrieved successfully',
             'data'    => new UserResource($user->load('category')),
+        ], 200);
+    }
+
+    public function uploadIDCard(Request $request)
+    {
+        $request->validate([
+            'id_card_front' => 'required|image|max:5120',
+            'id_card_back'  => 'required|image|max:5120',
+        ]);
+
+        $user = auth()->user();
+
+        if ($user->id_card_status === 'approved') {
+            return response()->json([
+                'status'  => 'false',
+                'message' => 'Your ID card is already verified.',
+            ], 422);
+        }
+
+
+
+        if ($user->id_card_front) {
+            Storage::disk('public')->delete([$user->id_card_front, $user->id_card_back]);
+        }
+
+        $frontPath = ImageService::saveImages([$request->file('id_card_front')], 'id_cards')[0];
+        $backPath  = ImageService::saveImages([$request->file('id_card_back')],  'id_cards')[0];
+
+        $user->update([
+            'id_card_front'  => $frontPath,
+            'id_card_back'   => $backPath,
+            'id_card_status' => 'pending',
+        ]);
+
+        return response()->json([
+            'status'  => 'true',
+            'message' => 'ID card uploaded successfully, pending review.',
+            'data'    => [
+                'id_card_status' => 'pending',
+                'front_image'    => asset('storage/' . $frontPath),
+                'back_image'     => asset('storage/' . $backPath),
+            ]
+        ], 200);
+    }
+
+    public function idCardStatus()
+    {
+        $user = auth()->user();
+
+        return response()->json([
+            'id_card_status'      => $user->id_card_status,
+            'id_card_verified_at' => $user->id_card_verified_at,
+        ], 200);
+    }
+
+    public function verifyIdCard(Request $request, User $user)
+    {
+
+        $data = $request->validate([
+            'status' => 'required|in:approved,rejected',
+        ]);
+
+        $updateData = ([
+            'id_card_status'      => $data['status'],
+            'id_card_verified_at' => $data['status'] === 'approved' ? now() : null,
+        ]);
+
+        if ($data['status'] === 'approved') {
+            $updateData['account_type'] = 'auction';
+        } else {
+            $updateData['account_type'] = 'normal';
+        }
+
+        $user->update($updateData);
+
+        return response()->json([
+            'status'  => 'true',
+            'message' => $data['status'] === 'approved'
+                ? 'The ID card has been approved successfully.'
+                : 'The ID card has been rejected.',
+            'data'    => [
+                'id'                  => $user->id,
+                'name'                => $user->name,
+                'account_type'        => $user->account_type,
+                'id_card_status'      => $user->id_card_status,
+                'id_card_verified_at' => $user->id_card_verified_at ? $user->id_card_verified_at->format('Y-m-d H:i:s') : null,
+            ]
+        ], 200);
+    }
+
+    public function pendingIdCards()
+    {
+        $users = User::where('id_card_status', 'pending')
+            ->latest()
+            ->paginate(20);
+
+        return response()->json([
+            'status'  => 'true',
+            'message' => 'Pending ID cards retrieved successfully.',
+            'data'    => UserResource::collection($users)->response()->getData(true),
+        ], 200);
+    }
+
+    public function showIdCard(User $user)
+    {
+        if (!$user) {
+            return response()->json(['status' => 'false', 'message' => 'User not found.'], 404);
+        }
+
+        if (!$user->id_card_front) {
+            return response()->json(['status' => 'false', 'message' => 'No ID card uploaded for this user.'], 404);
+        }
+
+        return response()->json([
+            'status'  => 'true',
+            'message' => 'User ID card details.',
+            'data'    => new UserResource($user),
         ], 200);
     }
 }

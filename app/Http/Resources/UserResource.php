@@ -23,6 +23,13 @@ class UserResource extends JsonResource
             'region'      => $this->region,
             'address'     => $this->address,
             'coin'        => $this->coins,
+            'account_type' => $this->account_type,
+            'id_card'    => [
+                'status'      => $this->id_card_status,
+                'front_image' => $this->when($this->id_card_front, asset('storage/' . $this->id_card_front)),
+                'back_image'  => $this->when($this->id_card_back, asset('storage/' . $this->id_card_back)),
+                'verified_at' => $this->id_card_verified_at?->format('Y-m-d H:i:s'),
+            ],
             'category'    => $this->whenLoaded('category', fn() => [
                 'id'   => $this->category->id,
                 'name' => $this->category->name,
