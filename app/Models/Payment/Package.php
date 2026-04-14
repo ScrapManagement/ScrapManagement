@@ -2,13 +2,14 @@
 
 namespace App\Models\Payment;
 
+use App\Interfaces\PayableInterface;
 use App\Models\Payment\CoinTransaction;
 use App\Models\Payment\Payment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class Package extends Model
+class Package extends Model implements PayableInterface
 {
     use HasFactory, Notifiable;
 
@@ -32,5 +33,17 @@ class Package extends Model
     public function payments()
     {
         return $this->hasMany(Payment::class);
+    }
+
+    public function getAmount(): float {
+        return $this->price;
+    }
+
+    public function getPayableId(): int {
+        return $this->id;
+    }
+
+    public function getPaymentType(): string {
+        return 'package';
     }
 }

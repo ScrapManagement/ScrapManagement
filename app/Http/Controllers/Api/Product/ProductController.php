@@ -20,7 +20,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['category', 'images'])->latest()->get();
+        $products = Product::with(['category', 'images', 'seller'])->latest()->get();
 
         return response()->json([
             'status'  => true,
@@ -34,9 +34,13 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
+        $user = auth()->user();
+        $saleType = ($user->account_type === 'auction') ? 'auction' : 'normal';
+
         $product = Product::create([
-            'user_id'     => Auth::id(),
+            'user_id'     => $user->id,
             'category_id' => $request->category_id,
+            'sale_type' => $saleType,
             'name'        => $request->name,
             'description' => $request->description,
             'quantity'    => $request->quantity,
@@ -267,24 +271,35 @@ class ProductController extends Controller
 
     public function unlock($productId, CoinService $coinService)
     {
-        $product = Product::findOrFail($productId);
+        $product = Product::with('seller')->findOrFail($productId);
 
-        if (!$product) {
+        $user = auth('api')->user();
+
+        if ($product->user_id === $user->id) {
             return response()->json([
                 'status'  => false,
-                'message' => 'Product not found',
-            ], 404);
+                'message' => 'You cannot unlock your own product. You already have access to its details.',
+            ], 403);
         }
 
         $result = $coinService->unlockProduct(auth()->user(), $product);
 
-        return response()->json([
-            'status' => $result,
-            'coins' => auth()->user()->fresh()->coins
-        ]);
+        if ($result) {
+            return response()->json([
+                'status'  => true,
+                'message' => 'Product unlocked successfully.',
+                'coins'   => $user->fresh()->coins,
+                'data'    => new ProductResource($product),
+            ]);
+        } else {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Failed to unlock product. Please check your coin balance.',
+            ], 400);
+        }
     }
 
-     public function updateMaterialPriority(Request $request, string $id)
+    public function updateMaterialPriority(Request $request, string $id)
     {
         $request->validate([
             'material_priority' => 'required|integer|min:1|max:5',
@@ -312,7 +327,7 @@ class ProductController extends Controller
 
     public function approvedProducts()
     {
-        $products = Product::with(['category', 'images'])
+        $products = Product::with(['category', 'images', 'seller'])
             ->where('status', 'approved')
             ->latest()
             ->get();
@@ -327,6 +342,93 @@ class ProductController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Approved products retrieved successfully',
+            'data'    => ProductResource::collection($products),
+        ], 200);
+    }
+
+    public function getAuctionProducts()
+    {
+        $products = Product::where('sale_type', 'auction')
+            ->where('status', 'approved')
+            ->with(['category', 'seller', 'images'])
+            ->latest()
+            ->paginate(15);
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Auction products retrieved successfully.',
+            'data'    => ProductResource::collection($products)->response()->getData(true),
+        ], 200);
+    }
+
+    public function getCoinProducts()
+    {
+        $products = Product::where('sale_type', 'coins')
+            ->where('status', 'approved')
+            ->with(['category', 'seller', 'images'])
+            ->latest()
+            ->paginate(15);
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Coin-based products retrieved successfully.',
+            'data'    => ProductResource::collection($products)->response()->getData(true),
+        ], 200);
+    }
+
+    public function changeSaleType(Request $request, string $id)
+    {
+        $request->validate([
+            'sale_type' => 'required|in:coins,auction',
+        ]);
+
+        $product = Product::find($id);
+
+        if (!$product) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Product not found',
+            ], 404);
+        }
+
+        $product->update([
+            'sale_type' => $request->sale_type,
+        ]);
+
+        $message = $request->sale_type === 'auction'
+            ? 'Product set to auction successfully!'
+            : 'Product set to coins successfully!';
+
+        return response()->json([
+            'status'  => true,
+            'message' => $message,
+            'data'    => new ProductResource($product->load(['category', 'images'])),
+        ], 200);
+    }
+
+    public function myProducts()
+    {
+        $products = auth()->user()->products()
+            ->with(['category', 'seller', 'images'])
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'status' => 'true',
+            'data'   => ProductResource::collection($products),
+        ], 200);
+    }
+
+    public function myUnlockedProducts()
+    {
+        $products = auth('api')->user()->unlockedProducts()
+            ->with(['seller', 'category', 'images'])
+            ->latest('product_unlocks.created_at')
+            ->paginate(15);
+
+        return response()->json([
+            'status'  => 'true',
+            'message' => 'Unlocked products retrieved successfully.',
             'data'    => ProductResource::collection($products),
         ], 200);
     }

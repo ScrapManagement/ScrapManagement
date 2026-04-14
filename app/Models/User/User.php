@@ -3,6 +3,9 @@
 namespace App\Models\User;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Auction\Auction;
+use App\Models\Auction\AuctionBid;
+use App\Models\Auction\AuctionParticipant;
 use App\Models\Payment\CoinTransaction;
 use App\Models\Payment\Payment;
 use App\Models\Payment\ProductUnlock;
@@ -37,6 +40,11 @@ class User extends Authenticatable implements JWTSubject
         'category_id',
         'phone_verified_at',
         'address',
+        'id_card_front',
+        'id_card_back',
+        'id_card_status',
+        'id_card_verified_at',
+        'account_type',
     ];
 
     /**
@@ -59,6 +67,7 @@ class User extends Authenticatable implements JWTSubject
         return [
             'email_verified_at' => 'datetime',
             'phone_verified_at' => 'datetime',
+            'id_card_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -128,9 +137,15 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(CoinTransaction::class);
     }
 
-    public function unlockedProducts()
+    public function unlockLogs()
     {
         return $this->hasMany(ProductUnlock::class);
+    }
+
+    public function unlockedProducts()
+    {
+        return $this->belongsToMany(Product::class, 'product_unlocks', 'user_id', 'product_id')
+            ->withTimestamps();
     }
 
     public function payments()
@@ -141,5 +156,34 @@ class User extends Authenticatable implements JWTSubject
     public function favoriteProducts()
     {
         return $this->belongsToMany(Product::class, 'favorites')->withTimestamps();
+    }
+
+    /** المزادات اللي اليوزر ده فايز فيها */
+    public function wonAuctions()
+    {
+        return $this->hasMany(Auction::class, 'winner_id');
+    }
+
+    /** المزادات اللي اليوزر ده مشارك فيها (دفع تأمين) */
+    public function auctionParticipations()
+    {
+        return $this->hasMany(AuctionParticipant::class);
+    }
+
+    /** كل الـ bids اللي اليوزر ده عملها */
+    public function auctionBids()
+    {
+        return $this->hasMany(AuctionBid::class);
+    }
+
+    public function isIdCardVerified(): bool
+    {
+        return $this->id_card_status === 'approved';
+    }
+
+    /** هل رفع البطاقة وبينتظر مراجعة؟ */
+    public function isIdCardPending(): bool
+    {
+        return $this->id_card_status === 'pending';
     }
 }

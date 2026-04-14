@@ -2,13 +2,13 @@
 
 namespace App\Interfaces;
 
-use App\Models\Payment\Package;
+use App\Interfaces\PayableInterface;
 use App\Models\User\User;
 use Illuminate\Http\Request;
 
 interface PaymentGatewayInterface
 {
-    public function sendPayment(User $user, Package $package): array;
+    public function sendPayment(User $user, PayableInterface $payable): array;
 
     public function callBack(Request $request);
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services\Payment;
 
+use App\Interfaces\PayableInterface;
 use App\Interfaces\PaymentGatewayInterface;
 use App\Models\Payment\Package;
 use App\Models\Payment\Payment;
@@ -34,9 +35,9 @@ class PaymobPaymentService extends BasePaymentService implements PaymentGatewayI
         ];
     }
 
-    public function sendPayment($user, Package $package): array
+    public function sendPayment($user, PayableInterface $payable): array
     {
-        $amount = $package->price;
+        $amount = $payable->getAmount();
 
         $token   = $this->generateToken();
         $orderId = $this->createOrder($token, $amount);
@@ -44,8 +45,10 @@ class PaymobPaymentService extends BasePaymentService implements PaymentGatewayI
 
         Payment::create([
             'user_id'      => $user->id,
-            'package_id'   => $package->id,
+            'package_id' => ($payable->getPaymentType() === 'package') ? $payable->getPayableId() : null,
+            'auction_id' => ($payable->getPaymentType() === 'insurance') ? $payable->getPayableId() : null,
             'gateway'      => 'paymob',
+            'type'       => $payable->getPaymentType(),
             'order_id'     => $orderId,
             'amount'       => $amount,
             'status'       => 'pending',
@@ -134,16 +137,20 @@ class PaymobPaymentService extends BasePaymentService implements PaymentGatewayI
 
             $success = $data['success'] ?? false;
             $orderId = $data['order'] ?? null;
+            $transactionId = $data['id'] ?? null;
 
             if (!$success || !$orderId) {
+                DB::rollBack();
                 return false;
             }
 
             $payment = Payment::where('order_id', $orderId)
+                ->where('type', 'package')
                 ->where('status', 'pending')
                 ->first();
 
             if (!$payment) {
+                DB::rollBack();
                 return false;
             }
 
@@ -151,18 +158,19 @@ class PaymobPaymentService extends BasePaymentService implements PaymentGatewayI
             $user    = $payment->user;
 
             if (!$package || !$user) {
+                DB::rollBack();
                 return false;
             }
 
             app(CoinService::class)->purchasePackage($user, $package);
 
             $payment->update([
-                'status' => 'paid'
+                'status' => 'paid',
+                'transaction_id' => $transactionId,
             ]);
 
             DB::commit();
             return true;
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Paymob Callback Error: ' . $e->getMessage());
@@ -177,6 +185,4 @@ class PaymobPaymentService extends BasePaymentService implements PaymentGatewayI
             . "?payment_token="
             . $paymentToken;
     }
-
-
 }
