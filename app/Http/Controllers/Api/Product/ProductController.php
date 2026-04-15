@@ -35,7 +35,7 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $user = auth()->user();
-        $saleType = ($user->account_type === 'auction') ? 'auction' : 'normal';
+        $saleType = ($user->account_type === 'auction') ? 'auction' : 'coins';
 
         $product = Product::create([
             'user_id'     => $user->id,
