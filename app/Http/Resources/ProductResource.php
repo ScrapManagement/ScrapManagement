@@ -17,6 +17,10 @@ class ProductResource extends JsonResource
     public function toArray(Request $request): array
     {
         $coinService = app(CoinService::class);
+        $userId = auth('api')->id();
+        $isOwner = ($this->user_id === $userId);
+        $isUnlocked = $isOwner || $this->isUnlockedBy($userId);
+
         return [
             'id'          => $this->id,
             'name'        => $this->name,
@@ -25,6 +29,7 @@ class ProductResource extends JsonResource
             'unit'        => $this->unit,
             'price'       => $this->price,
             'unlock_cost'       => $coinService->calculateUnlockCost($this->resource),
+            'is_unlocked'       => $isUnlocked,
             'status'      => $this->status,
             'sale_type'   => $this->sale_type,
             'material_priority' => $this->material_priority,
@@ -32,11 +37,7 @@ class ProductResource extends JsonResource
                 'id'   => $this->category->id,
                 'name' => $this->category->name,
             ]),
-            'seller' => $this->whenLoaded('seller', function () {
-
-                $userId = auth('api')->id();
-                $isOwner = ($this->user_id === $userId);
-                $isUnlocked = $isOwner || $this->isUnlockedBy($userId);
+            'seller'            => $this->whenLoaded('seller', function () use ($isUnlocked) {
 
                 $data = [
                     'id'     => $this->seller->id,
@@ -46,13 +47,14 @@ class ProductResource extends JsonResource
                 ];
 
                 if ($isUnlocked) {
-                    $data['phone'] = $this->seller->phone;
-                    $data['email'] = $this->seller->email;
+                    $data['phone']   = $this->seller->phone;
+                    $data['email']   = $this->seller->email;
                     $data['address'] = $this->seller->address;
                 }
 
                 return $data;
             }),
+
 
             'images'      => $this->whenLoaded(
                 'images',
