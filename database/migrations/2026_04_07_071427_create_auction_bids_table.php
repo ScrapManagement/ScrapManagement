@@ -15,9 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('auction_id')->constrained('auctions')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->decimal('amount', 10, 2);  // قيمة الـ bid
+            $table->decimal('amount', 10, 2);
             $table->timestamps();
-            // Index لتسريع استعلام آخر bid في المزاد
             $table->index(['auction_id', 'amount']);
         });
     }

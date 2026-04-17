@@ -17,7 +17,7 @@ return new class extends Migration
             'paid',
             'failed',
             'cancelled',
-            'refunded' // ✅ ضيفناها هنا
+            'refunded' 
         ])->default('pending')->change();
         });
     }
