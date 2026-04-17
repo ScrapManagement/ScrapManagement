@@ -217,9 +217,13 @@ class InsurancePaymentService extends BasePaymentService implements PaymentGatew
                 return true;
             }
 
+            if (isset($response['data']['message']) && str_contains($response['data']['message'], 'already refunded')) {
+                Log::info("Paymob confirmed: Order $transactionId was already refunded.");
+                return true;
+            }
+
             Log::error("Paymob Refund failed for Order: $transactionId", $response);
             return false;
-
         } catch (\Exception $e) {
             Log::error("Refund Method Error: " . $e->getMessage());
             return false;

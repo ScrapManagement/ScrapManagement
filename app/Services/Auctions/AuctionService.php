@@ -11,6 +11,7 @@ use App\Models\Auction\AuctionParticipant;
 use App\Models\Payment\Payment;
 use App\Models\Payment\ProductUnlock;
 use App\Models\Product\Product;
+use App\Services\Notification\WhatsAppService;
 use App\Services\Payment\InsurancePaymentService;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +20,8 @@ use Illuminate\Support\Facades\Log;
 class AuctionService
 {
     public function __construct(
-        private InsurancePaymentService $insurancePayment
+        private InsurancePaymentService $insurancePayment,
+        private WhatsAppService $whatsappService
     ) {}
 
     public function createAuction(Product $product, array $data): Auction
@@ -146,17 +148,12 @@ class AuctionService
 
             $auction->update(['current_price' => $amount]);
 
-            // ✅ broadcast لكل المشاركين في الـ channel في لحظتها
-            // toOthers() → متبعتش للي عمل الـ bid نفسه (هو شايفه من الـ API response)
             broadcast(new NewBidPlaced($bid->load('user')))->toOthers();
 
             return $bid;
         });
     }
 
-    // ──────────────────────────────────────────
-    // 4. إنهاء المزاد وتوزيع التأمينات
-    // ──────────────────────────────────────────
 
     public function endAuction(Auction $auction): void
     {
@@ -181,20 +178,15 @@ class AuctionService
 
             foreach ($auction->participants as $participant) {
                 if ($participant->user_id === $winnerId) {
-                    // الكسبان يخصم منه ثمن المزاد
                     $participant->deductFromFinalPrice();
                 } else {
-                    // الخسران يروح للـ Queue فوراً عشان يرجعله فلوسه
                     RefundParticipantJob::dispatch($participant);
                 }
             }
         });
     }
 
-    // ──────────────────────────────────────────
-    // 5. الفايز مش جاد
-    // ──────────────────────────────────────────
-
+ 
     public function markWinnerAsNotSerious(Auction $auction): void
     {
         if ($auction->status !== 'ended' || !$auction->winner_id) {
@@ -226,6 +218,7 @@ class AuctionService
                 if ($response) {
                     $payment->update(['status' => 'refunded']);
                     Log::info("Refund success for Order: {$payment->order_id}");
+                    $this->notifyUserViaWhatsApp($participant, $payment->amount, (string) $payment->order_id);
                 } else {
                     throw new Exception("Paymob refund failed for Order: {$payment->order_id}");
                 }
@@ -242,6 +235,23 @@ class AuctionService
     {
         foreach ($auction->participants as $participant) {
             RefundParticipantJob::dispatch($participant);
+        }
+    }
+
+    private function notifyUserViaWhatsApp(AuctionParticipant $participant, float $amount, string $orderId): void
+    {
+        try {
+            $user = $participant->user;
+            $productName = $participant->auction->product->name ?? 'the auction';
+
+            $message = "Hello {$user->name},\n\n";
+            $message .= "Your insurance deposit of ({$amount} EGP) for [{$productName}] has been successfully refunded.\n";
+            $message .= "Reference Transaction ID: ";
+
+            $this->whatsappService->sendMessage($user->phone, $message, $orderId);
+
+        } catch (\Exception $e) {
+            Log::error("Failed to send WhatsApp refund notification to User {$participant->user_id}: " . $e->getMessage());
         }
     }
 }
