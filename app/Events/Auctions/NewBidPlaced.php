@@ -13,16 +13,13 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NewBidPlaced implements ShouldBroadcastNow
+class NewBidPlaced implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public function __construct(public AuctionBid $bid) {}
 
-    /**
-     * Channel خاص بكل مزاد — بس المشاركين اللي دفعوا التأمين يسمعوا
-     * اسم الـ channel: private-auction.{auction_id}
-     */
+
     public function broadcastOn(): array
     {
         return [
@@ -30,9 +27,7 @@ class NewBidPlaced implements ShouldBroadcastNow
         ];
     }
 
-    /**
-     * الـ data اللي هتتبعت للـ Vue.js
-     */
+  
     public function broadcastWith(): array
     {
         return [

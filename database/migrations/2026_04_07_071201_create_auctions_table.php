@@ -17,16 +17,15 @@ return new class extends Migration
             $table->foreignId('winner_id')->nullable()->constrained('users')->nullOnDelete();
 
             $table->enum('status', [
-                'scheduled',   // الأدمن حدد الميعاد وبس
-                'active',      // المزاد فاتح دلوقتي
-                'ended',       // المزاد خلص
-                'cancelled',   // اتلغى
+                'scheduled',
+                'active',
+                'ended',
+                'cancelled',
             ])->default('scheduled');
 
-            $table->decimal('starting_price', 10, 2);   // السعر الابتدائي
-            $table->decimal('current_price', 10, 2);     // أعلى bid دلوقتي
+            $table->decimal('starting_price', 10, 2);
+            $table->decimal('current_price', 10, 2);
             $table->decimal('insurance_rate', 5, 2);     // نسبة التأمين % (مثلاً 10.00 = 10%)
-
             $table->timestamp('starts_at')->nullable();
             $table->timestamp('ends_at')->nullable();
 
