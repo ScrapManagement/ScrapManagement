@@ -357,7 +357,7 @@ class ProductController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Auction products retrieved successfully.',
-            'data'    => ProductResource::collection($products)->response()->getData(true),
+            'data'    => ProductResource::collection($products),
         ], 200);
     }
 
@@ -372,7 +372,7 @@ class ProductController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Coin-based products retrieved successfully.',
-            'data'    => ProductResource::collection($products)->response()->getData(true),
+            'data'    => ProductResource::collection($products),
         ], 200);
     }
 
