@@ -31,7 +31,7 @@ class PaymentController extends Controller
             ->first();
 
         if (!$payment) {
-            return redirect()->route('payment.failed');
+          return redirect()->away("https://scrapfe.sell-io.app/payment-failed");
         }
 
         $service = match($payment->type) {
@@ -41,17 +41,23 @@ class PaymentController extends Controller
         };
 
         if (!$service) {
-            return redirect()->route('payment.failed');
+             return redirect()->away("https://scrapfe.sell-io.app/payment-failed");
         }
 
         $response = $service->callBack($request);
 
-        return $response
+        if ($response) {
+             return redirect()->away("https://scrapfe.sell-io.app/payment-success");
+        } else {
+             return redirect()->away("https://scrapfe.sell-io.app/payment-failed");
+        }
+
+       /*  return $response
             ? redirect()->route('payment.success')
-            : redirect()->route('payment.failed');
+            : redirect()->route('payment.failed'); */
     }
 
-    public function success()
+   /*  public function success()
     {
         return view('payment-success');
     }
@@ -59,5 +65,5 @@ class PaymentController extends Controller
     public function failed()
     {
         return view('payment-failed');
-    }
+    } */
 }

@@ -14,7 +14,7 @@ class FavoriteController extends Controller
         $user = auth()->user();
 
         $products = $user->favoriteProducts()
-            ->with(['images', 'category'])
+            ->with(['images', 'category' , 'seller'])
             ->latest()
             ->get();
 
