@@ -135,11 +135,11 @@ class PaymobPaymentService extends BasePaymentService implements PaymentGatewayI
 
             Log::info('Paymob Callback', $data);
 
-            $success = $data['success'] ?? false;
+            $success = filter_var($data['success'] ?? false, FILTER_VALIDATE_BOOLEAN);
             $orderId = $data['order'] ?? null;
             $transactionId = $data['id'] ?? null;
 
-            if (!$success || !$orderId) {
+            if (!$orderId) {
                 DB::rollBack();
                 return false;
             }
@@ -151,6 +151,15 @@ class PaymobPaymentService extends BasePaymentService implements PaymentGatewayI
 
             if (!$payment) {
                 DB::rollBack();
+                return false;
+            }
+
+            if (!$success) {
+                $payment->update([
+                    'status' => 'failed',
+                    'transaction_id' => $transactionId,
+                ]);
+                DB::commit();
                 return false;
             }
 
