@@ -18,8 +18,13 @@ class AuctionController extends Controller
 
     public function index()
     {
-        $auctions = Auction::with(['product.images'])
-            ->whereIn('status', ['scheduled', 'active'])
+        $auctions = Auction::with([
+            'product.images',
+            'product.seller',
+            'product.category'
+        ])
+            ->where('status', 'scheduled')
+            ->where('starts_at', '>', now())
             ->latest()
             ->paginate(15);
 
@@ -34,6 +39,8 @@ class AuctionController extends Controller
     {
         $auction->load([
             'product.images',
+            'product.seller',
+            'product.category',
             'bids' => fn($q) => $q->orderByDesc('amount')->limit(10),
             'bids.user:id,name',
         ]);
@@ -52,7 +59,7 @@ class AuctionController extends Controller
     public function join(Request $request, Auction $auction)
     {
         $data = $request->validate([
-            'inspection_type' => 'required|in:online,offline',
+            'inspection_type' => 'sometimes|in:online,offline',
         ]);
 
         try {
