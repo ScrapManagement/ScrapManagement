@@ -57,13 +57,5 @@ class PaymentController extends Controller
             : redirect()->route('payment.failed'); */
     }
 
-   /*  public function success()
-    {
-        return view('payment-success');
-    }
-
-    public function failed()
-    {
-        return view('payment-failed');
-    } */
+   
 }

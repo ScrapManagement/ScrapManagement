@@ -77,11 +77,11 @@ class InsurancePaymentService extends BasePaymentService implements PaymentGatew
             $data    = $request->all();
             Log::info('Insurance Paymob Callback', $data);
 
-            $success = $data['success'] ?? false;
+            $success = filter_var($data['success'] ?? false, FILTER_VALIDATE_BOOLEAN);
             $orderId = $data['order']   ?? null;
             $transactionId = $data['id'] ?? null;
 
-            if (!$success || !$orderId) {
+            if (!$orderId) {
                 Log::warning("Payment failed or Order ID missing for Order: $orderId");
                 DB::rollBack();
                 return false;
@@ -94,6 +94,17 @@ class InsurancePaymentService extends BasePaymentService implements PaymentGatew
 
             if (!$payment) {
                 DB::rollBack();
+                return false;
+            }
+
+            if (!$success) {
+                $payment->update([
+                    'status' => 'failed',
+                    'transaction_id' => $transactionId,
+                ]);
+
+                DB::commit();
+                Log::warning("Payment failed for Insurance Order: $orderId. Status updated to failed.");
                 return false;
             }
 
@@ -115,7 +126,6 @@ class InsurancePaymentService extends BasePaymentService implements PaymentGatew
                 'inspection_status' => 'pending',
             ]);
 
-            // ربط الـ payment بالـ participant
             $payment->update([
                 'status'                 => 'paid',
                 'auction_participant_id' => $participant->id,
@@ -219,7 +229,6 @@ class InsurancePaymentService extends BasePaymentService implements PaymentGatew
 
             Log::error("Paymob Refund failed for Order: $transactionId", $response);
             return false;
-
         } catch (\Exception $e) {
             Log::error("Refund Method Error: " . $e->getMessage());
             return false;
