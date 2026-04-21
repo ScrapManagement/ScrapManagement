@@ -11,9 +11,12 @@ use App\Http\Controllers\Api\Product\FavoriteController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User\AuthController;
 use App\Http\Controllers\Api\User\UserController;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 
+
+Broadcast::routes(['middleware' => ['auth:api']]);
 
 Route::prefix('auth')->group(function () {
 
@@ -173,5 +176,5 @@ Route::prefix('auctions')
 
 
 Route::get('/payment/callback', [PaymentController::class, 'callback']);
-Route::get('/success', [PaymentController::class, 'success'])->name('payment.success');
-Route::get('/failed', [PaymentController::class, 'failed'])->name('payment.failed');
+/* Route::get('/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/failed', [PaymentController::class, 'failed'])->name('payment.failed'); */
