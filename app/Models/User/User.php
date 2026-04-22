@@ -45,6 +45,8 @@ class User extends Authenticatable implements JWTSubject
         'id_card_status',
         'id_card_verified_at',
         'account_type',
+        'company',
+        'job_title',
     ];
 
     /**

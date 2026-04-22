@@ -308,6 +308,8 @@ class UserController extends Controller
         $request->validate([
             'id_card_front' => 'required|image|max:5120',
             'id_card_back'  => 'required|image|max:5120',
+            'company'       => 'required|string|max:255',
+            'job_title'     => 'required|string|max:255',
         ]);
 
         $user = auth()->user();
@@ -331,6 +333,8 @@ class UserController extends Controller
         $user->update([
             'id_card_front'  => $frontPath,
             'id_card_back'   => $backPath,
+            'company'        => $request->company,
+            'job_title'      => $request->job_title,
             'id_card_status' => 'pending',
         ]);
 
@@ -339,6 +343,8 @@ class UserController extends Controller
             'message' => 'ID card uploaded successfully, pending review.',
             'data'    => [
                 'id_card_status' => 'pending',
+                'company'        => $user->company,
+                'job_title'      => $user->job_title,
                 'front_image'    => asset('storage/' . $frontPath),
                 'back_image'     => asset('storage/' . $backPath),
             ]
@@ -352,6 +358,8 @@ class UserController extends Controller
         return response()->json([
             'id_card_status'      => $user->id_card_status,
             'id_card_verified_at' => $user->id_card_verified_at,
+            'company'             => $user->company,
+            'job_title'           => $user->job_title,
         ], 200);
     }
 
