@@ -93,7 +93,7 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, string $id)
     {
-        $product = Product::with('images')->find($id);
+        $product = Product::with(['category', 'images', 'seller'])->find($id);
 
         if (!$product) {
             return response()->json([
