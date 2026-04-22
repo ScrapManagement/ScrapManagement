@@ -24,6 +24,8 @@ class UserResource extends JsonResource
             'address'     => $this->address,
             'coin'        => $this->coins,
             'account_type' => $this->account_type,
+            'company'             => $this->company,
+            'job_title'           => $this->job_title,
             'id_card'    => [
                 'status'      => $this->id_card_status,
                 'front_image' => $this->when($this->id_card_front, asset('storage/' . $this->id_card_front)),
