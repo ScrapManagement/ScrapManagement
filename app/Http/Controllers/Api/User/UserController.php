@@ -407,7 +407,7 @@ class UserController extends Controller
         return response()->json([
             'status'  => 'true',
             'message' => 'Pending ID cards retrieved successfully.',
-            'data'    => UserResource::collection($users)->response()->getData(true),
+            'data'    => UserResource::collection($users),
         ], 200);
     }
 
