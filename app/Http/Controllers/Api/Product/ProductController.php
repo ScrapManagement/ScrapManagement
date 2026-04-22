@@ -102,6 +102,13 @@ class ProductController extends Controller
             ], 404);
         }
 
+        if ($product->status === 'approved') {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Approved products cannot be updated. Please contact support if you need to make changes.',
+            ], 403);
+        }
+
         $product->update($request->only([
             'name',
             'description',
@@ -127,7 +134,7 @@ class ProductController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Product updated successfully',
-            'data'    => new ProductResource($product->load(['category', 'images'])),
+            'data'    => new ProductResource($product->load(['category', 'images', 'seller'])),
         ], 200);
     }
 
@@ -144,6 +151,13 @@ class ProductController extends Controller
                 'status'  => false,
                 'message' => 'Product not found',
             ], 404);
+        }
+
+        if ($product->status === 'approved') {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Approved products cannot be updated. Please contact support if you need to make changes.',
+            ], 403);
         }
 
         $product->delete();
