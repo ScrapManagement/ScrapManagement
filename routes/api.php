@@ -63,13 +63,13 @@ Route::prefix('admin')
 
         //3.Products Management
         Route::get('products',           [ProductController::class, 'index']);
+        Route::get('products/trashed',    [ProductController::class, 'trashed']);
         Route::get('products/{id}',      [ProductController::class, 'show']);
         Route::post('products/{id}/material-priority', [ProductController::class, 'updateMaterialPriority']);
         Route::post('products/{id}/status',  [ProductController::class, 'changeStatus']);
         Route::post('products/{id}/sale-type',  [ProductController::class, 'changeSaleType']);
         Route::delete('products/{id}/force', [ProductController::class, 'forceDelete']);
         Route::post('products/{id}/restore', [ProductController::class, 'restore']);
-        Route::get('products/trashed',    [ProductController::class, 'trashed']);
 
 
         //4. User Management
@@ -130,7 +130,7 @@ Route::prefix('products')
         Route::post('/',          [ProductController::class, 'store']);
         Route::get('{id}/unlock-cost', [ProductController::class, 'getUnlockCost']);
         Route::post('/{id}/unlock',    [ProductController::class, 'unlock']);
-         Route::get('my-products', [ProductController::class, 'myProducts']);
+        Route::get('my-products', [ProductController::class, 'myProducts']);
         Route::get('/my-unlocked-products', [ProductController::class, 'myUnlockedProducts']);
         Route::get('{id}',        [ProductController::class, 'show']);
         Route::post('{id}',       [ProductController::class, 'update']);
