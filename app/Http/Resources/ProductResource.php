@@ -37,6 +37,12 @@ class ProductResource extends JsonResource
                 'id'   => $this->category->id,
                 'name' => $this->category->name,
             ]),
+
+            'auction'           => $this->when(
+                $this->sale_type === 'auction',
+                fn() => new AuctionResource($this->whenLoaded('auction'))
+            ),
+
             'seller'            => $this->whenLoaded('seller', function () use ($isUnlocked) {
 
                 $data = [
@@ -54,7 +60,6 @@ class ProductResource extends JsonResource
 
                 return $data;
             }),
-
 
             'images'      => $this->whenLoaded(
                 'images',

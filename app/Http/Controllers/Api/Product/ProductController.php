@@ -20,7 +20,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['category', 'images', 'seller'])->latest()->get();
+        $products = Product::with(['category', 'images', 'seller', 'auction'])->latest()->get();
 
         return response()->json([
             'status'  => true,
@@ -72,7 +72,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        $product = Product::with(['category', 'images', 'seller'])->find($id);
+        $product = Product::with(['category', 'images', 'seller', 'auction'])->find($id);
 
         if (!$product) {
             return response()->json([
@@ -93,7 +93,7 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, string $id)
     {
-        $product = Product::with(['category', 'images', 'seller'])->find($id);
+        $product = Product::with(['category', 'images', 'seller', 'auction'])->find($id);
 
         if (!$product) {
             return response()->json([
@@ -341,7 +341,7 @@ class ProductController extends Controller
 
     public function approvedProducts()
     {
-        $products = Product::with(['category', 'images', 'seller'])
+        $products = Product::with(['category', 'images', 'seller', 'auction'])
             ->where('status', 'approved')
             ->latest()
             ->get();
@@ -364,7 +364,11 @@ class ProductController extends Controller
     {
         $products = Product::where('sale_type', 'auction')
             ->where('status', 'approved')
-            ->with(['category', 'seller', 'images'])
+            ->whereHas('auction', function ($query) {
+                $query->whereIn('status', ['scheduled', 'active'])
+                    ->where('ends_at', '>', now());
+            })
+            ->with(['category', 'seller', 'images', 'auction'])
             ->latest()
             ->paginate(15);
 
@@ -379,7 +383,7 @@ class ProductController extends Controller
     {
         $products = Product::where('sale_type', 'coins')
             ->where('status', 'approved')
-            ->with(['category', 'seller', 'images'])
+            ->with(['category', 'seller', 'images', 'auction'])
             ->latest()
             ->paginate(15);
 
@@ -423,7 +427,7 @@ class ProductController extends Controller
     public function myProducts()
     {
         $products = auth()->user()->products()
-            ->with(['category', 'seller', 'images'])
+            ->with(['category', 'seller', 'images', 'auction'])
             ->latest()
             ->get();
 
@@ -436,7 +440,7 @@ class ProductController extends Controller
     public function myUnlockedProducts()
     {
         $products = auth('api')->user()->unlockedProducts()
-            ->with(['seller', 'category', 'images'])
+            ->with(['seller', 'category', 'images', 'auction'])
             ->latest('product_unlocks.created_at')
             ->paginate(15);
 
