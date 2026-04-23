@@ -35,12 +35,23 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         $user = auth()->user();
-        $saleType = ($user->account_type === 'auction') ? 'auction' : 'coins';
 
+        $saleType = 'coins';
+
+        if ($request->sale_type === 'auction') {
+            if ($user->account_type === 'auction') {
+                $saleType = 'auction';
+            } else {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Your account is not eligible to create auction products. Please verify your ID card to access this feature.',
+                ], 403);
+            }
+        }
         $product = Product::create([
             'user_id'     => $user->id,
             'category_id' => $request->category_id,
-            'sale_type' => $saleType,
+            'sale_type'   => $saleType,
             'name'        => $request->name,
             'description' => $request->description,
             'quantity'    => $request->quantity,
@@ -304,7 +315,7 @@ class ProductController extends Controller
         }
 
         $result = $coinService->unlockProduct($user, $product);
-        
+
         if ($result) {
             return response()->json([
                 'status'  => true,

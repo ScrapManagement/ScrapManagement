@@ -28,6 +28,7 @@ class ProductRequest extends FormRequest
             'quantity'    => 'required|integer|min:1',
             'unit'        => 'required|string|max:50',
             'category_id' => 'required|exists:categories,id',
+            'sale_type' => 'nullable|in:coins,auction',
             'images'      => 'required|array|min:1',
             'images.*'    => 'image|mimes:jpg,jpeg,png,webp|max:2048',
         ];
