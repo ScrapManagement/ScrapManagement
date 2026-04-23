@@ -296,8 +296,15 @@ class ProductController extends Controller
             ], 403);
         }
 
-        $result = $coinService->unlockProduct(auth()->user(), $product);
+        if ($product->sale_type === 'auction' && $user->account_type !== 'auction') {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Your account is not eligible to unlock auction products. Please verify your ID card to access this feature.',
+            ], 403);
+        }
 
+        $result = $coinService->unlockProduct($user, $product);
+        
         if ($result) {
             return response()->json([
                 'status'  => true,
