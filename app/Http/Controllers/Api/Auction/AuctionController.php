@@ -23,14 +23,12 @@ class AuctionController extends Controller
             'product.seller',
             'product.category'
         ])
-            ->where('status', 'scheduled')
-            ->where('starts_at', '>', now())
             ->latest()
             ->paginate(15);
 
         return response()->json([
             'status'  => 'true',
-            'message' => 'Auctions retrieved successfully.',
+            'message' => 'All Auctions retrieved successfully for Admin.',
             'data'    => AuctionResource::collection($auctions),
         ], 200);
     }
@@ -113,6 +111,13 @@ class AuctionController extends Controller
 
     public function store(AuctionRequest $request, Product $product)
     {
+        if ($product->auction()->exists()) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'This product already has an auction.',
+            ], 422);
+        }
+
         $auction = $this->auctionService->createAuction($product, $request->validated());
 
         return response()->json([

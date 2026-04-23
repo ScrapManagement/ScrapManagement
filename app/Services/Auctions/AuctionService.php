@@ -36,7 +36,6 @@ class AuctionService
             throw new Exception('The product must be approved before creating an auction.');
         }
 
-        $seller = $product->seller;
         if ($seller->id_card_status !== 'approved') {
             throw new Exception('The seller must have an approved ID card to create an auction.');
         }
@@ -186,7 +185,7 @@ class AuctionService
         });
     }
 
- 
+
     public function markWinnerAsNotSerious(Auction $auction): void
     {
         if ($auction->status !== 'ended' || !$auction->winner_id) {
