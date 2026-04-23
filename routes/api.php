@@ -29,7 +29,6 @@ Route::prefix('auth')->group(function () {
     Route::get('products/approved',           [ProductController::class, 'approvedProducts']);
     Route::get('products/coins',              [ProductController::class, 'getCoinProducts']);
     Route::get('products/auction',            [ProductController::class, 'getAuctionProducts']);
-    Route::get('auctions', [AuctionController::class, 'index']);
     Route::get('auctions/{auction}', [AuctionController::class, 'show']);
 });
 
@@ -90,6 +89,7 @@ Route::prefix('admin')
         Route::post('packages/{id}/status', [PackageController::class, 'changeStatus']);
 
         //6. Auctions Management
+        Route::get('auctions', [AuctionController::class, 'index']);
         Route::post('products/{product}/auctions', [AuctionController::class, 'store']);
         Route::post('auctions/{auction}', [AuctionController::class, 'update']);
         Route::delete('auctions/{auction}', [AuctionController::class, 'destroy']);

@@ -30,6 +30,16 @@ class AuctionResource extends JsonResource
             'status'           => $this->status,
             'starts_at'        => $this->starts_at->format('Y-m-d H:i:s'),
             'ends_at'          => $this->ends_at->format('Y-m-d H:i:s'),
+            'bids'             => $this->whenLoaded('bids', function () {
+                return $this->bids->map(function ($bid) {
+                    return [
+                        'id'         => $bid->id,
+                        'amount'     => $bid->amount,
+                        'user_name'  => $bid->user->name ?? 'Unknown',
+                        'created_at' => $bid->created_at->diffForHumans(),
+                    ];
+                });
+            }),
             'product' => new ProductResource($this->whenLoaded('product')),
             'created_at'       => $this->created_at->diffForHumans(),
         ];
