@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DashBoard\Auction\AuctionRequest;
 use App\Http\Requests\DashBoard\Auction\UpdateAuctionRequest;
 use App\Http\Resources\AuctionResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Auction\Auction;
 use App\Models\Payment\ProductUnlock;
 use App\Models\Product\Product;
@@ -103,6 +104,41 @@ class AuctionController extends Controller
             ->paginate(20);
 
         return response()->json($bids);
+    }
+
+    public function myAuctionProducts()
+    {
+        $products = auth('api')->user()->products()
+            ->where('sale_type', 'auction')
+            ->with(['category', 'seller', 'images', 'auction'])
+            ->latest()
+            ->paginate(15);
+
+        return response()->json([
+            'status'  => 'true',
+            'message' => 'My auction products retrieved successfully.',
+            'data'    => ProductResource::collection($products),
+        ], 200);
+    }
+
+    public function myWonAuctions()
+    {
+        $user = auth('api')->user();
+
+        $auctions = Auction::where('status', 'ended')
+            ->whereHas('bids', function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->whereRaw('amount = (select max(amount) from auction_bids where auction_id = auctions.id)');
+            })
+            ->with(['product.images', 'product.seller', 'product.category'])
+            ->latest()
+            ->paginate(15);
+
+        return response()->json([
+            'status'  => 'true',
+            'message' => 'My won auctions retrieved successfully.',
+            'data'    => AuctionResource::collection($auctions),
+        ], 200);
     }
 
     // ─────────────────────────────────────────────────────────────────

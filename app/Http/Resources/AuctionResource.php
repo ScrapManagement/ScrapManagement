@@ -32,8 +32,7 @@ class AuctionResource extends JsonResource
             'ends_at'          => $this->ends_at->format('Y-m-d H:i:s'),
 
             'winner'           => $this->when($this->status === 'ended', function () {
-                $winningBid = $this->bids()->orderByDesc('amount')->first();
-
+                $winningBid = $this->bids()->with('user')->orderByDesc('amount')->first();
                 if ($winningBid) {
                     return [
                         'user_id'    => $winningBid->user->id,
@@ -68,7 +67,7 @@ class AuctionResource extends JsonResource
                     ];
                 });
             }),
-            
+
             'product' => new ProductResource($this->whenLoaded('product')),
             'created_at'       => $this->created_at->diffForHumans(),
         ];

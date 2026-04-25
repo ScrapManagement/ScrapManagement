@@ -455,6 +455,23 @@ class ProductController extends Controller
         ], 200);
     }
 
+    public function myCoinProducts()
+    {
+        $products = auth('api')->user()->products()
+            ->where('sale_type', 'coins')
+            ->with(['category', 'seller', 'images'])
+            ->latest()
+            ->paginate(15);
+
+        return response()->json([
+            'status'  => 'true',
+            'message' => 'My coin products retrieved successfully.',
+            'data'    => ProductResource::collection($products),
+        ], 200);
+    }
+
+
+
     public function myUnlockedProducts()
     {
         $products = auth('api')->user()->unlockedProducts()
