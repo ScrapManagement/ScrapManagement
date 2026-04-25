@@ -132,6 +132,7 @@ Route::prefix('products')
         Route::get('{id}/unlock-cost', [ProductController::class, 'getUnlockCost']);
         Route::post('/{id}/unlock',    [ProductController::class, 'unlock']);
         Route::get('my-products', [ProductController::class, 'myProducts']);
+        Route::get('my-coin-products', [ProductController::class, 'myCoinProducts']);
         Route::get('/my-unlocked-products', [ProductController::class, 'myUnlockedProducts']);
         Route::get('{id}',        [ProductController::class, 'show']);
         Route::post('{id}',       [ProductController::class, 'update']);
@@ -173,6 +174,8 @@ Route::prefix('auctions')
         Route::post('{auction}/pay', [AuctionController::class, 'join']);
         Route::post('{auction}/bid', [AuctionController::class, 'bid']);
         Route::get('{auction}/bids', [AuctionController::class, 'bids']);
+        Route::get('my-auction-products', [AuctionController::class, 'myAuctionProducts']);
+        Route::get('my-won-auctions', [AuctionController::class, 'myWonAuctions']);
     });
 
 
