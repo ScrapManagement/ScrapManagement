@@ -27,7 +27,7 @@ class NewBidPlaced implements ShouldBroadcast
         ];
     }
 
-  
+
     public function broadcastWith(): array
     {
         return [
@@ -42,9 +42,7 @@ class NewBidPlaced implements ShouldBroadcast
         ];
     }
 
-    /**
-     * اسم الـ event اللي الـ Vue هيستمع عليه
-     */
+   
     public function broadcastAs(): string
     {
         return 'bid.placed';
