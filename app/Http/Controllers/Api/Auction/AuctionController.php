@@ -204,4 +204,22 @@ class AuctionController extends Controller
             return response()->json(['status' => 'false', 'message' => $e->getMessage()], 422);
         }
     }
+
+    public function adminShow(Auction $auction)
+    {
+        $auction->load([
+            'product.images',
+            'product.seller',
+            'product.category',
+            'bids' => fn($q) => $q->orderByDesc('amount'),
+            'bids.user:id,name,phone',
+            'participants.user:id,name,phone',
+        ]);
+
+        return response()->json([
+            'status'  => 'true',
+            'message' => 'Auction details and full bid history retrieved successfully.',
+            'data'    => new AuctionResource($auction),
+        ], 200);
+    }
 }

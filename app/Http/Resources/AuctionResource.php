@@ -55,6 +55,20 @@ class AuctionResource extends JsonResource
                     ];
                 });
             }),
+
+            'participants'     => $this->whenLoaded('participants', function () {
+                return $this->participants->map(function ($participant) {
+                    return [
+                        'id'               => $participant->id,
+                        'user_id'          => $participant->user->id,
+                        'user_name'        => $participant->user->name,
+                        'user_phone'       => $participant->user->phone ?? null,
+                        'insurance_amount' => $participant->insurance_amount,
+                        'insurance_status' => $participant->insurance_status,
+                    ];
+                });
+            }),
+            
             'product' => new ProductResource($this->whenLoaded('product')),
             'created_at'       => $this->created_at->diffForHumans(),
         ];

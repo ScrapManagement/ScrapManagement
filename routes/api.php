@@ -96,6 +96,7 @@ Route::prefix('admin')
         Route::post('auctions/{auction}/activate', [AuctionController::class, 'activate']);
         Route::post('auctions/{auction}/end', [AuctionController::class, 'end']);
         Route::post('auctions/{auction}/mark-not-serious', [AuctionController::class, 'markWinnerNotSerious']);
+        Route::get('auctions/{auction}', [AuctionController::class, 'adminShow']);
 
         // 7. Admins Management
         Route::get('/',        [AdminController::class, 'index']);
