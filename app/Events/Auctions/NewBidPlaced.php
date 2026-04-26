@@ -23,7 +23,7 @@ class NewBidPlaced implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('auction.' . $this->bid->auction_id),
+            new PrivateChannel('auctions.' . $this->bid->auction_id),
         ];
     }
 
@@ -42,7 +42,7 @@ class NewBidPlaced implements ShouldBroadcast
         ];
     }
 
-   
+
     public function broadcastAs(): string
     {
         return 'bid.placed';
