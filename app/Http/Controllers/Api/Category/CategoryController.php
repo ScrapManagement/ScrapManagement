@@ -12,7 +12,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::with(['parent', 'children'])->get();
+        $categories = Category::with(['parent', 'children' ,'admin'])->get();
 
         return response()->json([
             'status' => true,
@@ -32,14 +32,14 @@ class CategoryController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Category created successfully',
-            'data' => new CategoryResource($category->load(['parent', 'children'])),
+            'data' => new CategoryResource($category->load(['parent', 'children', 'admin'])),
         ], 201);
     }
 
 
     public function show(string $id)
     {
-        $category =  Category::with(['parent', 'children'])->find($id);
+        $category =  Category::with(['parent', 'children', 'admin'])->find($id);
 
         if (!$category) {
             return response()->json([
@@ -75,7 +75,7 @@ class CategoryController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Category updated successfully',
-            'data'    => new CategoryResource($category->load(['parent', 'children'])),
+            'data'    => new CategoryResource($category->load(['parent', 'children', 'admin'])),
         ], 200);
     }
 
@@ -100,7 +100,7 @@ class CategoryController extends Controller
 
     public function trashed()
     {
-        $categories = Category::with(['parent', 'children'])->onlyTrashed()->get();
+        $categories = Category::with(['parent', 'children', 'admin'])->onlyTrashed()->get();
 
         return response()->json([
             'status'  => true,
@@ -134,7 +134,7 @@ class CategoryController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Category restored successfully',
-            'data'    => new CategoryResource($category->load(['parent', 'children'])),
+            'data'    => new CategoryResource($category->load(['parent', 'children', 'admin'])),
         ], 200);
     }
 
