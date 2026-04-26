@@ -21,10 +21,15 @@ class CategoryResource extends JsonResource
                 'id'   => $this->parent->id,
                 'name' => $this->parent->name,
             ]),
-            'children'   => $this->whenLoaded('children', fn() =>
+            'children'   => $this->whenLoaded(
+                'children',
+                fn() =>
                 CategoryResource::collection($this->children)
             ),
-            'created_by' => $this->created_by,
+            'admin'      => $this->whenLoaded('admin', fn() => [
+                'id'   => $this->admin->id,
+                'name' => $this->admin->name,
+            ]),
             'deleted_at' => $this->deleted_at?->format('Y-m-d H:i:s'),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
