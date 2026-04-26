@@ -10,5 +10,12 @@ use Illuminate\Support\Facades\Broadcast;
  */
 //Broadcast::channel('auction.{auctionId}', AuctionChannel::class);
 Broadcast::channel('auctions.{auctionId}', function ($user, $auctionId) {
-    return Auction::find($auctionId)->hasParticipant($user->id);
+    $auction = Auction::with('product')->find($auctionId);
+    if (!$auction) {
+        return false;
+    }
+    if ($auction->product->user_id === $user->id) {
+        return true;
+    }
+    return $auction->hasParticipant($user->id);
 });
