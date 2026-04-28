@@ -7,6 +7,7 @@ use App\Http\Requests\DashBoard\Package\PackageRequest;
 use App\Http\Requests\DashBoard\Package\UpdatePackageRequest;
 use App\Http\Resources\PackageResource;
 use App\Models\Payment\Package;
+use App\Models\Payment\Payment;
 use App\Services\Payment\PaymobPaymentService;
 use Illuminate\Http\Request;
 
@@ -163,5 +164,25 @@ class PackageController extends Controller
             'payment_url' => $payment['url'],
             'message' => 'Redirect user to payment page'
         ]);
+    }
+
+    public function totalRevenue()
+    {
+        $packagesRevenue = Payment::where('status', 'paid')
+            ->where('type', 'package')
+            ->sum('amount');
+
+        $totalProfit = $packagesRevenue;
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Total revenue retrieved successfully',
+            'data'    => [
+                'total_profit'     => $totalProfit,
+                'revenue_details'  => [
+                    'from_packages' => $packagesRevenue,
+                ],
+            ]
+        ], 200);
     }
 }

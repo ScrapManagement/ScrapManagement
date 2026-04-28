@@ -160,19 +160,16 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Product::class, 'favorites')->withTimestamps();
     }
 
-    /** المزادات اللي اليوزر ده فايز فيها */
     public function wonAuctions()
     {
         return $this->hasMany(Auction::class, 'winner_id');
     }
 
-    /** المزادات اللي اليوزر ده مشارك فيها (دفع تأمين) */
     public function auctionParticipations()
     {
         return $this->hasMany(AuctionParticipant::class);
     }
 
-    /** كل الـ bids اللي اليوزر ده عملها */
     public function auctionBids()
     {
         return $this->hasMany(AuctionBid::class);
@@ -183,7 +180,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->id_card_status === 'approved';
     }
 
-    /** هل رفع البطاقة وبينتظر مراجعة؟ */
     public function isIdCardPending(): bool
     {
         return $this->id_card_status === 'pending';
