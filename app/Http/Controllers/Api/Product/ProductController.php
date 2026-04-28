@@ -20,7 +20,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['category', 'images', 'seller', 'auction'])->latest()->get();
+        $products = Product::with(['category', 'images', 'seller', 'auction'])
+            ->withCount('productUnlocks')
+            ->latest()
+            ->get();
 
         return response()->json([
             'status'  => true,
@@ -83,7 +86,9 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        $product = Product::with(['category', 'images', 'seller', 'auction'])->find($id);
+        $product = Product::with(['category', 'images', 'seller', 'auction'])
+            ->withCount('productUnlocks')
+            ->find($id);
 
         if (!$product) {
             return response()->json([

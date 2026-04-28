@@ -30,6 +30,7 @@ class ProductResource extends JsonResource
             'price'       => $this->price,
             'unlock_cost'       => $coinService->calculateUnlockCost($this->resource),
             'is_unlocked'       => $isUnlocked,
+            'unlocks_count' => $this->whenCounted('productUnlocks'),
             'status'      => $this->status,
             'sale_type'   => $this->sale_type,
             'material_priority' => $this->material_priority,
