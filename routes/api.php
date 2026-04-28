@@ -82,6 +82,7 @@ Route::prefix('admin')
 
         //5. Package Management
         Route::get('packages', [PackageController::class, 'index']);
+        Route::get('packages/revenue', [PackageController::class, 'totalRevenue']);
         Route::post('packages', [PackageController::class, 'store']);
         Route::get('packages/{id}', [PackageController::class, 'show']);
         Route::post('packages/{id}', [PackageController::class, 'update']);
