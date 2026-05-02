@@ -351,6 +351,13 @@ class ProductController extends Controller
             ], 404);
         }
 
+        if ($product->status === 'active') {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Cannot update material priority for an active product.',
+            ], 403);
+        }
+
         $product->update([
             'material_priority' => $request->material_priority,
         ]);
@@ -358,7 +365,7 @@ class ProductController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Material priority updated successfully',
-            'data'    => new ProductResource($product->load(['category', 'images'])),
+            'data'    => new ProductResource($product->load(['category', 'images', 'seller'])),
         ], 200);
     }
 
@@ -443,7 +450,7 @@ class ProductController extends Controller
         return response()->json([
             'status'  => true,
             'message' => $message,
-            'data'    => new ProductResource($product->load(['category', 'images'])),
+            'data'    => new ProductResource($product->load(['category', 'images', 'seller'])),
         ], 200);
     }
 
