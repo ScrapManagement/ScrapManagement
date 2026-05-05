@@ -79,7 +79,9 @@ class AuctionService
         }
 
         return DB::transaction(function () use ($auction) {
-            $auction->product->update(['sale_type' => null]);
+            if ($auction->product) {
+                $auction->product->delete();
+            }
 
             return $auction->delete();
         });
@@ -248,7 +250,6 @@ class AuctionService
             $message .= "Reference Transaction ID: ";
 
             $this->whatsappService->sendMessage($user->phone, $message, $orderId);
-
         } catch (\Exception $e) {
             Log::error("Failed to send WhatsApp refund notification to User {$participant->user_id}: " . $e->getMessage());
         }
