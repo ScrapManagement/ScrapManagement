@@ -74,7 +74,7 @@ class AuctionService
 
     public function deleteAuction(Auction $auction): bool
     {
-        if ($auction->status !== 'scheduled') {
+        if ($auction->status == 'active') {
             throw new \Exception('Cannot delete an auction that has already started or ended.');
         }
 
