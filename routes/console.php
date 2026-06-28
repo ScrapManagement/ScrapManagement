@@ -16,7 +16,6 @@ Schedule::call(function () {
         ->update(['status' => 'active']);
 })->everyMinute();
 
-// ٢. إنهاء المزادات المنتهية تلقائياً
 Schedule::call(function () {
     $service = app(AuctionService::class);
 
@@ -26,3 +25,6 @@ Schedule::call(function () {
             $service->endAuction($auction);
         });
 })->everyMinute();
+
+Schedule::command('auctions:start-scheduled')->everyMinute();
+Schedule::command('auctions:end-expired')->everyMinute();
