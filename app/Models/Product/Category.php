@@ -16,6 +16,7 @@ class Category extends Model
     protected $fillable = [
         'parent_id',
         'name',
+        'material_priority',
         'created_by',
     ];
 
@@ -39,4 +40,12 @@ class Category extends Model
         return $this->hasMany(Category::class, 'parent_id');
     }
 
+
+    public function getMaterialPriorityAttribute($value)
+    {
+        if ($this->parent_id) {
+            return $this->parent?->material_priority;
+        }
+        return $value;
+    }
 }

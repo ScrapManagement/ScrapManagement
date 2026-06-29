@@ -39,18 +39,19 @@ class CoinService
 
         $subTotal = $baseCost + $priceFactor + $quantityFactor;
 
-        $totalCost = $subTotal * ($product->material_priority ?? 1);
+        $totalCost = $subTotal * ($product->category->material_priority ?? 1);
 
         return (int) $totalCost;
     }
-    
+
     public function unlockProduct($user, Product $product)
     {
         return DB::transaction(function () use ($user, $product) {
 
             if (ProductUnlock::where('user_id', $user->id)
                 ->where('product_id', $product->id)
-                ->exists()) {
+                ->exists()
+            ) {
 
                 return 'already_unlocked';
             }
