@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DashBoard\Product\ProductRequest;
 use App\Http\Requests\DashBoard\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
+use App\Models\Product\Category;
 use App\Models\Product\Image;
 use App\Models\Product\Product;
 use App\Services\Payment\CoinService;
@@ -51,6 +52,15 @@ class ProductController extends Controller
                 ], 403);
             }
         }
+
+        $category = Category::with('parent')->find($request->category_id);
+        if (!$category) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Category not found',
+            ], 404);
+        }
+
         $product = Product::create([
             'user_id'     => $user->id,
             'category_id' => $request->category_id,
@@ -61,6 +71,7 @@ class ProductController extends Controller
             'unit'        => $request->unit,
             'price'       => $request->price,
             'status'      => 'pending',
+            'material_priority' => $category->material_priority,
         ]);
 
         if ($request->hasFile('images')) {
@@ -125,14 +136,23 @@ class ProductController extends Controller
             ], 403);
         }
 
-        $product->update($request->only([
+        $updateData = $request->only([
             'name',
             'description',
             'quantity',
             'unit',
             'price',
             'category_id',
-        ]));
+        ]);
+
+        if ($request->has('category_id') && $request->category_id != $product->category_id) {
+            $category = Category::with('parent')->find($request->category_id);
+            if ($category) {
+                $updateData['material_priority'] = $category->material_priority;
+            }
+        }
+
+        $product->update($updateData);
 
         if ($request->hasFile('images')) {
             ImageService::deleteImages($product->images);
