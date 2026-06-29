@@ -25,11 +25,12 @@ class UpdateCategoryRequest extends FormRequest
 
         return [
             'name'      => 'sometimes|string|max:255|unique:categories,name,' . $categoryId,
+            'material_priority' => 'sometimes|nullable|integer|min:1|max:5',
             'parent_id' => 'sometimes|nullable|exists:categories,id|not_in:' . $categoryId,
         ];
     }
 
-     public function messages(): array
+    public function messages(): array
     {
         return [
             'name.unique'        => 'This category name already exists',

@@ -26,6 +26,7 @@ class CategoryController extends Controller
         $category = Category::create([
             'name' => $request->name,
             'parent_id' => $request->parent_id,
+            'material_priority' => $request->material_priority,
             'created_by' => auth('admin-api')->id(),
         ]);
 
@@ -70,6 +71,7 @@ class CategoryController extends Controller
         $category->update([
             'name' => $request->name,
             'parent_id' => $request->parent_id,
+            'material_priority' => $request->material_priority,
         ]);
 
         return response()->json([
