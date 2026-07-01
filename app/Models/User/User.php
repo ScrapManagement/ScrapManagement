@@ -6,6 +6,7 @@ namespace App\Models\User;
 use App\Models\Auction\Auction;
 use App\Models\Auction\AuctionBid;
 use App\Models\Auction\AuctionParticipant;
+use App\Models\Chatbot\ChatMessage;
 use App\Models\Payment\CoinTransaction;
 use App\Models\Payment\Payment;
 use App\Models\Payment\ProductUnlock;
@@ -183,5 +184,10 @@ class User extends Authenticatable implements JWTSubject
     public function isIdCardPending(): bool
     {
         return $this->id_card_status === 'pending';
+    }
+
+    public function chatMessages()
+    {
+        return $this->hasMany(ChatMessage::class);
     }
 }

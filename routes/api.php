@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Admin\AdminAuthController;
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\Auction\AuctionController;
 use App\Http\Controllers\Api\Category\CategoryController;
+use App\Http\Controllers\Api\Chatbot\ChatbotController;
 use App\Http\Controllers\Api\Payment\PackageController;
 use App\Http\Controllers\Api\Payment\PaymentController;
 use App\Http\Controllers\Api\Payment\WalletController;
@@ -179,7 +180,13 @@ Route::prefix('auctions')
         Route::get('my-won-auctions', [AuctionController::class, 'myWonAuctions']);
     });
 
+Route::prefix('chatbot')
+    ->middleware('auth:api', 'phone_verified')
+    ->group(function () {
+        Route::post('/ask', [ChatbotController::class, 'ask']);
+        Route::get('/history', [ChatbotController::class, 'getHistory']);
+    });
+
+
 
 Route::get('/payment/callback', [PaymentController::class, 'callback']);
-/* Route::get('/success', [PaymentController::class, 'success'])->name('payment.success');
-Route::get('/failed', [PaymentController::class, 'failed'])->name('payment.failed'); */
