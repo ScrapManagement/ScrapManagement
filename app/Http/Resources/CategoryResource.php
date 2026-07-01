@@ -17,6 +17,7 @@ class CategoryResource extends JsonResource
         return [
             'id'         => $this->id,
             'name'       => $this->name,
+            'material_priority' => $this->material_priority,
             'parent'     => $this->whenLoaded('parent', fn() => [
                 'id'   => $this->parent->id,
                 'name' => $this->parent->name,
