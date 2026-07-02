@@ -70,6 +70,8 @@ class ProductController extends Controller
             'quantity'    => $request->quantity,
             'unit'        => $request->unit,
             'price'       => $request->price,
+            'latitude'    => $request->latitude,
+            'longitude'   => $request->longitude,
             'status'      => 'pending',
             'material_priority' => $category->material_priority,
         ]);
@@ -143,6 +145,8 @@ class ProductController extends Controller
             'unit',
             'price',
             'category_id',
+            'latitude',
+            'longitude',
         ]);
 
         if ($request->has('category_id') && $request->category_id != $product->category_id) {
@@ -502,8 +506,6 @@ class ProductController extends Controller
         ], 200);
     }
 
-
-
     public function myUnlockedProducts()
     {
         $products = auth('api')->user()->unlockedProducts()
@@ -516,5 +518,30 @@ class ProductController extends Controller
             'message' => 'Unlocked products retrieved successfully.',
             'data'    => ProductResource::collection($products),
         ], 200);
+    }
+
+    //Location-based product retrieval
+    public function getNearbyProducts(Request $request)
+    {
+        $request->validate([
+            'latitude'    => 'required|numeric',
+            'longitude'   => 'required|numeric',
+            'radius' => 'nullable|numeric|min:1|max:1000'
+        ]);
+
+        $userLat = $request->latitude;
+        $userLng = $request->longitude;
+        $radius  = $request->radius ?? 50;
+
+        $nearbyProducts = Product::with(['category', 'seller', 'images', 'auction'])
+            ->where('status', 'approved')
+            ->withinRadius($userLat, $userLng, $radius)
+            ->get();
+
+        return response()->json([
+            'status'  => true,
+            'message' => "filled products within {$radius} km radius retrieved successfully.",
+            'data'    => ProductResource::collection($nearbyProducts)
+        ]);
     }
 }

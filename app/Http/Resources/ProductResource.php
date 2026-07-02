@@ -28,6 +28,11 @@ class ProductResource extends JsonResource
             'quantity'    => $this->quantity,
             'unit'        => $this->unit,
             'price'       => $this->price,
+            'latitude'    => $this->latitude,
+            'longitude'   => $this->longitude,
+            'distance'    => $this->when(isset($this->distance), function () {
+                return round($this->distance, 2);
+            }),
             'unlock_cost'       => $coinService->calculateUnlockCost($this->resource),
             'is_unlocked'       => $isUnlocked,
             'unlocks_count' => $this->whenCounted('productUnlocks'),

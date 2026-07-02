@@ -29,6 +29,8 @@ class Product extends Model
         'material_priority',
         'reviewed_by',
         'sale_type',
+        'latitude',
+        'longitude'
     ];
 
     public function seller()
@@ -67,7 +69,6 @@ class Product extends Model
         return $this->productUnlocks()->where('user_id', $userId)->exists();
     }
 
-    /** المزاد المرتبط بالمنتج (واحد بس) */
     public function auction()
     {
         return $this->hasOne(Auction::class);
@@ -86,5 +87,15 @@ class Product extends Model
     public function isApproved(): bool
     {
         return $this->status === 'approved';
+    }
+
+    public function scopeWithinRadius($query, $userLat, $userLng, $radiusInKm = 50)
+    {
+        $haversine = "(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude))))";
+
+        return $query->selectRaw("*, {$haversine} AS distance")
+                     ->addBinding([$userLat, $userLng, $userLat], 'select')
+                     ->having('distance', '<=', $radiusInKm)
+                     ->orderBy('distance', 'asc');
     }
 }
