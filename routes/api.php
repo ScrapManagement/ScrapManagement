@@ -136,6 +136,7 @@ Route::prefix('products')
         Route::get('my-products', [ProductController::class, 'myProducts']);
         Route::get('my-coin-products', [ProductController::class, 'myCoinProducts']);
         Route::get('/my-unlocked-products', [ProductController::class, 'myUnlockedProducts']);
+        Route::post('/nearby-products', [ProductController::class, 'getNearbyProducts']);
         Route::get('{id}',        [ProductController::class, 'show']);
         Route::post('{id}',       [ProductController::class, 'update']);
         Route::delete('{id}',     [ProductController::class, 'softDelete']);

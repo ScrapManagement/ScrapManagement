@@ -28,6 +28,8 @@ class UpdateProductRequest extends FormRequest
             'quantity'    => 'sometimes|integer|min:1',
             'unit'        => 'sometimes|string|max:50',
             'category_id' => 'sometimes|exists:categories,id',
+            'latitude'    => 'sometimes|numeric|between:-90,90',
+            'longitude'   => 'sometimes|numeric|between:-180,180',
             'images'      => 'nullable|array',
             'images.*'    => 'image|mimes:jpg,jpeg,png,webp|max:2048',
         ];
