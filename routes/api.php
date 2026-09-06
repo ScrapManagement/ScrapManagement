@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\AdminAuthController;
 use App\Http\Controllers\Api\Admin\AdminController;
+use App\Http\Controllers\Api\Admin\AdminReportController;
 use App\Http\Controllers\Api\Auction\AuctionController;
 use App\Http\Controllers\Api\Category\CategoryController;
 use App\Http\Controllers\Api\Chatbot\ChatbotController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Api\Payment\WalletController;
 use App\Http\Controllers\Api\Product\FavoriteController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User\AuthController;
+use App\Http\Controllers\Api\User\ReportController;
 use App\Http\Controllers\Api\User\UserController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -72,7 +74,7 @@ Route::prefix('admin')
         Route::post('products/{id}/restore', [ProductController::class, 'restore']);
 
 
-        //4. User Management
+        //4. User Management 
         Route::get('user',                 [UserController::class, 'index']);
         Route::delete('user/{id}/force',     [UserController::class, 'forceDelete']);
         Route::post('user/{id}/restore',     [UserController::class, 'restore']);
@@ -80,6 +82,8 @@ Route::prefix('admin')
         Route::get('user/pending-id-cards', [UserController::class, 'pendingIdCards']);
         Route::get('user/{user}/id-card', [UserController::class, 'showIdCard']);
         Route::post('user/{user}/verify-id-card', [UserController::class, 'verifyIdCard']);
+        Route::post('user/{id}/ban', [AdminController::class, 'banUser']);
+        Route::post('user/{id}/unban', [AdminController::class, 'unbanUser']);
 
         //5. Package Management
         Route::get('packages', [PackageController::class, 'index']);
@@ -100,7 +104,12 @@ Route::prefix('admin')
         Route::post('auctions/{auction}/mark-not-serious', [AuctionController::class, 'markWinnerNotSerious']);
         Route::get('auctions/{auction}', [AuctionController::class, 'adminShow']);
 
-        // 7. Admins Management
+        // 7. Reports Management
+        Route::get('reports', [AdminReportController::class, 'index']);
+        Route::post('reports/{id}/status', [AdminReportController::class, 'changeStatus']);
+       
+
+        // 8. Admins Management
         Route::get('/',        [AdminController::class, 'index']);
         Route::post('/',       [AdminController::class, 'store']);
         Route::get('{id}',     [AdminController::class, 'show']);
@@ -112,13 +121,15 @@ Route::prefix('admin')
 
 
 Route::prefix('user')
-    ->middleware('auth:api', 'phone_verified')
+    ->middleware('auth:api', 'phone_verified', 'check_banned')
     ->group(function () {
         Route::get('me',        [AuthController::class, 'me']);
         Route::post('logout',   [AuthController::class, 'logout']);
         Route::post('refresh',  [AuthController::class, 'refresh']);
         //  Route::get('/',                 [UserController::class, 'index']);
         //  Route::post('/',                [UserController::class, 'store']);
+        Route::post('report', [ReportController::class, 'submitReport']);
+
         Route::get('/profile',          [UserController::class, 'profile']);
         Route::post('upload-id-card', [UserController::class, 'uploadIDCard']);
         Route::get('status-id-card', [UserController::class, 'idCardStatus']);
@@ -128,7 +139,7 @@ Route::prefix('user')
     });
 
 Route::prefix('products')
-    ->middleware('auth:api', 'phone_verified')
+    ->middleware('auth:api', 'phone_verified', 'check_banned')
     ->group(function () {
         Route::post('/',          [ProductController::class, 'store']);
         Route::get('{id}/unlock-cost', [ProductController::class, 'getUnlockCost']);
@@ -143,14 +154,14 @@ Route::prefix('products')
     });
 
 Route::prefix('categories')
-    ->middleware('auth:api', 'phone_verified')
+    ->middleware('auth:api', 'phone_verified',  'check_banned')
     ->group(function () {
         Route::get('/',    [CategoryController::class, 'index']);
         Route::get('{id}', [CategoryController::class, 'show']);
     });
 
 Route::prefix('wallet')
-    ->middleware('auth:api', 'phone_verified')
+    ->middleware('auth:api', 'phone_verified', 'check_banned')
     ->group(function () {
 
         Route::get('/balance', [WalletController::class, 'balance']);
@@ -158,13 +169,13 @@ Route::prefix('wallet')
     });
 
 Route::prefix('packages')
-    ->middleware('auth:api', 'phone_verified')
+    ->middleware('auth:api', 'phone_verified', 'check_banned')
     ->group(function () {
         Route::post('{id}/pay', [PackageController::class, 'pay']);
     });
 
 Route::prefix('favorites')
-    ->middleware('auth:api', 'phone_verified')
+    ->middleware('auth:api', 'phone_verified', 'check_banned')
     ->group(function () {
         Route::post('/{productId}', [FavoriteController::class, 'add']);
         Route::delete('/{productId}', [FavoriteController::class, 'remove']);
@@ -172,7 +183,7 @@ Route::prefix('favorites')
     });
 
 Route::prefix('auctions')
-    ->middleware('auth:api', 'phone_verified')
+    ->middleware('auth:api', 'phone_verified', 'check_banned')
     ->group(function () {
         Route::post('{auction}/pay', [AuctionController::class, 'join']);
         Route::post('{auction}/bid', [AuctionController::class, 'bid']);
@@ -182,7 +193,7 @@ Route::prefix('auctions')
     });
 
 Route::prefix('chatbot')
-    ->middleware('auth:api', 'phone_verified')
+    ->middleware('auth:api', 'phone_verified', 'check_banned')
     ->group(function () {
         Route::post('/ask', [ChatbotController::class, 'ask']);
         Route::get('/history', [ChatbotController::class, 'getHistory']);

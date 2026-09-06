@@ -13,6 +13,7 @@ use App\Models\Payment\ProductUnlock;
 use App\Models\Product\Category;
 use App\Models\Product\Order;
 use App\Models\Product\Product;
+use App\Models\User\Report;
 use App\Models\User\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -48,6 +49,8 @@ class User extends Authenticatable implements JWTSubject
         'account_type',
         'company',
         'job_title',
+        'is_banned',
+        'ban_reason',
     ];
 
     /**
@@ -189,5 +192,17 @@ class User extends Authenticatable implements JWTSubject
     public function chatMessages()
     {
         return $this->hasMany(ChatMessage::class);
+    }
+
+    public function reportsReceived()
+    {
+        return $this->hasMany(Report::class, 'reported_user_id');
+    }
+
+    public function ban($reason)
+    {
+        $this->is_banned = true;
+        $this->ban_reason = $reason;
+        $this->save();
     }
 }

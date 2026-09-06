@@ -19,10 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     )
     ->withMiddleware(function (Middleware $middleware): void {
+
         $middleware->alias([
             'is.admin' => \App\Http\Middleware\DashBoard\Admin\IsAdmin::class,
             'role' => \App\Http\Middleware\DashBoard\User\CheckRole::class,
             'phone_verified' => \App\Http\Middleware\DashBoard\User\EnsurePhoneIsVerified::class,
+            'check_banned' => \App\Http\Middleware\DashBoard\User\CheckBannedUser::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

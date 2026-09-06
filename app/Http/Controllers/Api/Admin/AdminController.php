@@ -7,6 +7,8 @@ use App\Http\Requests\DashBoard\Admin\AdminRequest;
 use App\Http\Requests\DashBoard\Admin\UpdateAdminRequest;
 use App\Http\Resources\AdminResource;
 use App\Models\Admin\Admin;
+use App\Models\User\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -193,5 +195,33 @@ class AdminController extends Controller
             'message' => 'Profile retrieved successfully',
             'data'    => new AdminResource($admin),
         ], 200);
+    }
+
+    public function banUser(Request $request, $id)
+    {
+        $request->validate([
+            'reason' => 'required|string',
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->ban($request->reason);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User has been banned successfully.'
+        ]);
+    }
+
+    public function unbanUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->is_banned = false;
+        $user->ban_reason = null;
+        $user->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User has been unbanned successfully.'
+        ]);
     }
 }
